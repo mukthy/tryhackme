@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///usr/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.80 scan initiated Sun May  3 12:24:17 2020 as: nmap -p- -sC -sV -oA nmap/all 10.10.93.13 -->
+<nmaprun scanner="nmap" args="nmap -p- -sC -sV -oA nmap/all 10.10.93.13" start="1588488857" startstr="Sun May  3 12:24:17 2020" version="7.80" xmloutputversion="1.04">
+<scaninfo type="syn" protocol="tcp" numservices="65535" services="1-65535"/>
+<verbose level="0"/>
+<debugging level="0"/>
+<host starttime="1588488858" endtime="1588489980"><status state="up" reason="echo-reply" reason_ttl="63"/>
+<address addr="10.10.93.13" addrtype="ipv4"/>
+<hostnames>
+</hostnames>
+<ports><extraports state="closed" count="65524">
+<extrareasons reason="resets" count="65524"/>
+</extraports>
+<port protocol="tcp" portid="21"><state state="open" reason="syn-ack" reason_ttl="63"/><service name="ftp" product="ProFTPD" version="1.3.5" ostype="Unix" method="probed" conf="10"><cpe>cpe:/a:proftpd:proftpd:1.3.5</cpe></service></port>
+<port protocol="tcp" portid="22"><state state="open" reason="syn-ack" reason_ttl="63"/><service name="ssh" product="OpenSSH" version="7.2p2 Ubuntu 4ubuntu2.7" extrainfo="Ubuntu Linux; protocol 2.0" ostype="Linux" method="probed" conf="10"><cpe>cpe:/a:openbsd:openssh:7.2p2</cpe><cpe>cpe:/o:linux:linux_kernel</cpe></service><script id="ssh-hostkey" output="&#xa;  2048 b3:ad:83:41:49:e9:5d:16:8d:3b:0f:05:7b:e2:c0:ae (RSA)&#xa;  256 f8:27:7d:64:29:97:e6:f8:65:54:65:22:f7:c8:1d:8a (ECDSA)&#xa;  256 5a:06:ed:eb:b6:56:7e:4c:01:dd:ea:bc:ba:fa:33:79 (ED25519)"><table>
+<elem key="key">AAAAB3NzaC1yc2EAAAADAQABAAABAQC8m00IxH/X5gfu6Cryqi5Ti2TKUSpqgmhreJsfLL8uBJrGAKQApxZ0lq2rKplqVMs+xwlGTuHNZBVeURqvOe9MmkMUOh4ZIXZJ9KNaBoJb27fXIvsS6sgPxSUuaeoWxutGwHHCDUbtqHuMAoSE2Nwl8G+VPc2DbbtSXcpu5c14HUzktDmsnfJo/5TFiRuYR0uqH8oDl6Zy3JSnbYe/QY+AfTpr1q7BDV85b6xP97/1WUTCw54CKUTV25Yc5h615EwQOMPwox94+48JVmgE00T4ARC3l6YWibqY6a5E8BU+fksse35fFCwJhJEk6xplDkeauKklmVqeMysMWdiAQtDj</elem>
+<elem key="fingerprint">b3ad834149e95d168d3b0f057be2c0ae</elem>
+<elem key="bits">2048</elem>
+<elem key="type">ssh-rsa</elem>
+</table>
+<table>
+<elem key="key">AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBBpJvoJrIaQeGsbHE9vuz4iUyrUahyfHhN7wq9z3uce9F+Cdeme1O+vIfBkmjQJKWZ3vmezLSebtW3VRxKKH3n8=</elem>
+<elem key="fingerprint">f8277d642997e6f865546522f7c81d8a</elem>
+<elem key="bits">256</elem>
+<elem key="type">ecdsa-sha2-nistp256</elem>
+</table>
+<table>
+<elem key="key">AAAAC3NzaC1lZDI1NTE5AAAAIGB22m99Wlybun7o/h9e6Ea/9kHMT0Dz2GqSodFqIWDi</elem>
+<elem key="fingerprint">5a06edebb6567e4c01ddeabcbafa3379</elem>
+<elem key="bits">256</elem>
+<elem key="type">ssh-ed25519</elem>
+</table>
+</script></port>
+<port protocol="tcp" portid="80"><state state="open" reason="syn-ack" reason_ttl="63"/><service name="http" product="Apache httpd" version="2.4.18" extrainfo="(Ubuntu)" method="probed" conf="10"><cpe>cpe:/a:apache:http_server:2.4.18</cpe></service><script id="http-robots.txt" output="1 disallowed entry &#xa;/admin.html"/><script id="http-server-header" output="Apache/2.4.18 (Ubuntu)"><elem>Apache/2.4.18 (Ubuntu)</elem>
+</script><script id="http-title" output="Site doesn&apos;t have a title (text/html)."></script></port>
+<port protocol="tcp" portid="111"><state state="open" reason="syn-ack" reason_ttl="63"/><service name="rpcbind" version="2-4" extrainfo="RPC #100000" method="probed" conf="10"/><script id="rpcinfo" output="&#xa;  program version    port/proto  service&#xa;  100000  2,3,4        111/tcp   rpcbind&#xa;  100000  2,3,4        111/udp   rpcbind&#xa;  100000  3,4          111/tcp6  rpcbind&#xa;  100000  3,4          111/udp6  rpcbind&#xa;  100003  2,3,4       2049/tcp   nfs&#xa;  100003  2,3,4       2049/tcp6  nfs&#xa;  100003  2,3,4       2049/udp   nfs&#xa;  100003  2,3,4       2049/udp6  nfs&#xa;  100005  1,2,3      48073/tcp   mountd&#xa;  100005  1,2,3      49803/udp   mountd&#xa;  100005  1,2,3      53115/tcp6  mountd&#xa;  100005  1,2,3      54061/udp6  mountd&#xa;  100021  1,3,4      38555/tcp6  nlockmgr&#xa;  100021  1,3,4      42550/udp6  nlockmgr&#xa;  100021  1,3,4      43711/tcp   nlockmgr&#xa;  100021  1,3,4      53971/udp   nlockmgr&#xa;  100227  2,3         2049/tcp   nfs_acl&#xa;  100227  2,3         2049/tcp6  nfs_acl&#xa;  100227  2,3         2049/udp   nfs_acl&#xa;  100227  2,3         2049/udp6  nfs_acl&#xa;"><table key="100021">
+<table key="udp6">
+<table key="version">
+<elem>1</elem>
+<elem>3</elem>
+<elem>4</elem>
+</table>
+<elem key="addr">::</elem>
+<elem key="port">42550</elem>
+<elem key="owner">superuser</elem>
+</table>
+<table key="tcp6">
+<table key="version">
+<elem>1</elem>
+<elem>3</elem>
+<elem>4</elem>
+</table>
+<elem key="addr">::</elem>
+<elem key="port">38555</elem>
+<elem key="owner">superuser</elem>
+</table>
+<table key="tcp">
+<table key="version">
+<elem>1</elem>
+<elem>3</elem>
+<elem>4</elem>
+</table>
+<elem key="addr">0.0.0.0</elem>
+<elem key="port">43711</elem>
+<elem key="owner">superuser</elem>
+</table>
+<table key="udp">
+<table key="version">
+<elem>1</elem>
+<elem>3</elem>
+<elem>4</elem>
+</table>
+<elem key="addr">0.0.0.0</elem>
+<elem key="port">53971</elem>
+<elem key="owner">superuser</elem>
+</table>
+</table>
+<table key="100003">
+<table key="udp6">
+<table key="version">
+<elem>2</elem>
+<elem>3</elem>
+<elem>4</elem>
+</table>
+<elem key="addr">::</elem>
+<elem key="port">2049</elem>
+<elem key="owner">superuser</elem>
+</table>
+<table key="tcp6">
+<table key="version">
+<elem>2</elem>
+<elem>3</elem>
+<elem>4</elem>
+</table>
+<elem key="addr">::</elem>
+<elem key="port">2049</elem>
+<elem key="owner">superuser</elem>
+</table>
+<table key="udp">
+<table key="version">
+<elem>2</elem>
+<elem>3</elem>
+<elem>4</elem>
+</table>
+<elem key="addr">0.0.0.0</elem>
+<elem key="port">2049</elem>
+<elem key="owner">superuser</elem>
+</table>
+<table key="tcp">
+<table key="version">
+<elem>2</elem>
+<elem>3</elem>
+<elem>4</elem>
+</table>
+<elem key="addr">0.0.0.0</elem>
+<elem key="port">2049</elem>
+<elem key="owner">superuser</elem>
+</table>
+</table>
+<table key="100005">
+<table key="udp6">
+<table key="version">
+<elem>1</elem>
+<elem>2</elem>
+<elem>3</elem>
+</table>
+<elem key="addr">::</elem>
+<elem key="port">54061</elem>
+<elem key="owner">superuser</elem>
+</table>
+<table key="tcp6">
+<table key="version">
+<elem>1</elem>
+<elem>2</elem>
+<elem>3</elem>
+</table>
+<elem key="addr">::</elem>
+<elem key="port">53115</elem>
+<elem key="owner">superuser</elem>
+</table>
+<table key="tcp">
+<table key="version">
+<elem>1</elem>
+<elem>2</elem>
+<elem>3</elem>
+</table>
+<elem key="addr">0.0.0.0</elem>
+<elem key="port">48073</elem>
+<elem key="owner">superuser</elem>
+</table>
+<table key="udp">
+<table key="version">
+<elem>1</elem>
+<elem>2</elem>
+<elem>3</elem>
+</table>
+<elem key="addr">0.0.0.0</elem>
+<elem key="port">49803</elem>
+<elem key="owner">superuser</elem>
+</table>
+</table>
+<table key="100227">
+<table key="udp6">
+<table key="version">
+<elem>2</elem>
+<elem>3</elem>
+</table>
+<elem key="addr">::</elem>
+<elem key="port">2049</elem>
+<elem key="owner">superuser</elem>
+</table>
+<table key="tcp6">
+<table key="version">
+<elem>2</elem>
+<elem>3</elem>
+</table>
+<elem key="addr">::</elem>
+<elem key="port">2049</elem>
+<elem key="owner">superuser</elem>
+</table>
+<table key="udp">
+<table key="version">
+<elem>2</elem>
+<elem>3</elem>
+</table>
+<elem key="addr">0.0.0.0</elem>
+<elem key="port">2049</elem>
+<elem key="owner">superuser</elem>
+</table>
+<table key="tcp">
+<table key="version">
+<elem>2</elem>
+<elem>3</elem>
+</table>
+<elem key="addr">0.0.0.0</elem>
+<elem key="port">2049</elem>
+<elem key="owner">superuser</elem>
+</table>
+</table>
+<table key="100000">
+<table key="udp6">
+<table key="version">
+<elem>3</elem>
+<elem>4</elem>
+</table>
+<elem key="addr">::</elem>
+<elem key="port">111</elem>
+<elem key="owner">superuser</elem>
+</table>
+<table key="tcp">
+<table key="version">
+<elem>2</elem>
+<elem>3</elem>
+<elem>4</elem>
+</table>
+<elem key="addr">0.0.0.0</elem>
+<elem key="port">111</elem>
+<elem key="owner">superuser</elem>
+</table>
+<table key="udp">
+<table key="version">
+<elem>2</elem>
+<elem>3</elem>
+<elem>4</elem>
+</table>
+<elem key="addr">0.0.0.0</elem>
+<elem key="port">111</elem>
+<elem key="owner">superuser</elem>
+</table>
+<table key="local">
+<table key="version">
+<elem>3</elem>
+<elem>4</elem>
+</table>
+<elem key="addr">/run/rpcbind.sock</elem>
+<elem key="owner">superuser</elem>
+</table>
+<table key="tcp6">
+<table key="version">
+<elem>3</elem>
+<elem>4</elem>
+</table>
+<elem key="addr">::</elem>
+<elem key="port">111</elem>
+<elem key="owner">superuser</elem>
+</table>
+</table>
+</script></port>
+<port protocol="tcp" portid="139"><state state="open" reason="syn-ack" reason_ttl="63"/><service name="netbios-ssn" product="Samba smbd" version="3.X - 4.X" extrainfo="workgroup: WORKGROUP" hostname="KENOBI" method="probed" conf="10"><cpe>cpe:/a:samba:samba</cpe></service></port>
+<port protocol="tcp" portid="445"><state state="open" reason="syn-ack" reason_ttl="63"/><service name="netbios-ssn" product="Samba smbd" version="4.3.11-Ubuntu" extrainfo="workgroup: WORKGROUP" hostname="KENOBI" method="probed" conf="10"><cpe>cpe:/a:samba:samba</cpe></service></port>
+<port protocol="tcp" portid="2049"><state state="open" reason="syn-ack" reason_ttl="63"/><service name="nfs_acl" version="2-3" extrainfo="RPC #100227" method="probed" conf="10"/></port>
+<port protocol="tcp" portid="33331"><state state="open" reason="syn-ack" reason_ttl="63"/><service name="mountd" version="1-3" extrainfo="RPC #100005" method="probed" conf="10"/></port>
+<port protocol="tcp" portid="43711"><state state="open" reason="syn-ack" reason_ttl="63"/><service name="nlockmgr" version="1-4" extrainfo="RPC #100021" method="probed" conf="10"/></port>
+<port protocol="tcp" portid="47055"><state state="open" reason="syn-ack" reason_ttl="63"/><service name="mountd" version="1-3" extrainfo="RPC #100005" method="probed" conf="10"/></port>
+<port protocol="tcp" portid="48073"><state state="open" reason="syn-ack" reason_ttl="63"/><service name="mountd" version="1-3" extrainfo="RPC #100005" method="probed" conf="10"/></port>
+</ports>
+<hostscript><script id="clock-skew" output="mean: 1h39m59s, deviation: 2h53m13s, median: 0s"><elem key="count">3</elem>
+<elem key="median">0</elem>
+<elem key="mean">5999</elem>
+<elem key="stddev">10393</elem>
+</script><script id="nbstat" output="NetBIOS name: KENOBI, NetBIOS user: &lt;unknown&gt;, NetBIOS MAC: &lt;unknown&gt; (unknown)"/><script id="smb-os-discovery" output="&#xa;  OS: Windows 6.1 (Samba 4.3.11-Ubuntu)&#xa;  Computer name: kenobi&#xa;  NetBIOS computer name: KENOBI\x00&#xa;  Domain name: \x00&#xa;  FQDN: kenobi&#xa;  System time: 2020-05-03T02:12:53-05:00&#xa;"><elem key="os">Windows 6.1</elem>
+<elem key="lanmanager">Samba 4.3.11-Ubuntu</elem>
+<elem key="server">KENOBI\x00</elem>
+<elem key="date">2020-05-03T02:12:53-05:00</elem>
+<elem key="fqdn">kenobi</elem>
+<elem key="domain_dns">\x00</elem>
+<elem key="workgroup">WORKGROUP\x00</elem>
+</script><script id="smb-security-mode" output="&#xa;  account_used: guest&#xa;  authentication_level: user&#xa;  challenge_response: supported&#xa;  message_signing: disabled (dangerous, but default)"><elem key="account_used">guest</elem>
+<elem key="authentication_level">user</elem>
+<elem key="challenge_response">supported</elem>
+<elem key="message_signing">disabled</elem>
+</script><script id="smb2-security-mode" output="&#xa;  2.02: &#xa;    Message signing enabled but not required"><table key="2.02">
+<elem>Message signing enabled but not required</elem>
+</table>
+</script><script id="smb2-time" output="&#xa;  date: 2020-05-03T07:12:53&#xa;  start_date: N/A"><elem key="date">2020-05-03T07:12:53</elem>
+<elem key="start_date">N/A</elem>
+</script></hostscript><times srtt="210097" rttvar="7898" to="241689"/>
+</host>
+<runstats><finished time="1588489980" timestr="Sun May  3 12:43:00 2020" elapsed="1123.02" summary="Nmap done at Sun May  3 12:43:00 2020; 1 IP address (1 host up) scanned in 1123.02 seconds" exit="success"/><hosts up="1" down="0" total="1"/>
+</runstats>
+</nmaprun>

