@@ -1,0 +1,4 @@
+# Nmap 7.80 scan initiated Sun May 10 07:09:39 2020 as: nmap -sC -sV -oA nmap/all 10.10.89.255
+Host: 10.10.89.255 ()	Status: Up
+Host: 10.10.89.255 ()	Ports: 135/open/tcp//msrpc//Microsoft Windows RPC/, 139/open/tcp//netbios-ssn//Microsoft Windows netbios-ssn/, 445/open/tcp//microsoft-ds//Windows 7 Professional 7601 Service Pack 1 microsoft-ds (workgroup: WORKGROUP)/, 3389/open/tcp//tcpwrapped///, 5357/open/tcp//http//Microsoft HTTPAPI httpd 2.0 (SSDP|UPnP)/, 8000/open/tcp//http//Icecast streaming media server/, 49152/open/tcp//msrpc//Microsoft Windows RPC/, 49153/open/tcp//msrpc//Microsoft Windows RPC/, 49154/open/tcp//msrpc//Microsoft Windows RPC/, 49158/open/tcp//msrpc//Microsoft Windows RPC/, 49159/open/tcp//msrpc//Microsoft Windows RPC/, 49160/open/tcp//msrpc//Microsoft Windows RPC/	Ignored State: closed (988)
+# Nmap done at Sun May 10 07:12:06 2020 -- 1 IP address (1 host up) scanned in 147.22 seconds

