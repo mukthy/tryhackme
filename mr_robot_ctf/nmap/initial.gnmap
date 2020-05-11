@@ -1,0 +1,4 @@
+# Nmap 7.80 scan initiated Mon May 11 05:39:41 2020 as: nmap -sC -sV -oA nmap/initial 10.10.246.146
+Host: 10.10.246.146 ()	Status: Up
+Host: 10.10.246.146 ()	Ports: 22/closed/tcp//ssh///, 80/open/tcp//http//Apache httpd/, 443/open/tcp//ssl|http//Apache httpd/	Ignored State: filtered (997)
+# Nmap done at Mon May 11 05:40:26 2020 -- 1 IP address (1 host up) scanned in 44.55 seconds

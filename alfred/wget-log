@@ -1,0 +1,6 @@
+--2020-05-11 09:07:47--  http://function/
+Resolving function (function)... failed: Name or service not known.
+wget: unable to resolve host address ‘function’
+--2020-05-11 09:08:03--  http://invoke-powershelltcp/
+Resolving invoke-powershelltcp (invoke-powershelltcp)... failed: Name or service not known.
+wget: unable to resolve host address ‘invoke-powershelltcp’

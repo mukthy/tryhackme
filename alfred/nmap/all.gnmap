@@ -1,0 +1,4 @@
+# Nmap 7.80 scan initiated Mon May 11 08:36:36 2020 as: nmap -p- -Pn -sC -sV -oA nmap/all 10.10.224.56
+Host: 10.10.224.56 ()	Status: Up
+Host: 10.10.224.56 ()	Ports: 80/open/tcp//http//Microsoft IIS httpd 7.5/, 3389/open/tcp//ssl|ms-wbt-server?///, 8080/open/tcp//http//Jetty 9.4.z-SNAPSHOT/	Ignored State: filtered (65532)
+# Nmap done at Mon May 11 08:43:18 2020 -- 1 IP address (1 host up) scanned in 402.09 seconds
