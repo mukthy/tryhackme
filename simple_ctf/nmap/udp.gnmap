@@ -1,0 +1,4 @@
+# Nmap 7.80 scan initiated Mon May 11 09:50:12 2020 as: nmap -sU -oA nmap/udp 10.10.154.48
+Host: 10.10.154.48 ()	Status: Up
+Host: 10.10.154.48 ()	Ports: 21/closed/udp//ftp///, 80/closed/udp//http///, 2222/closed/udp//msantipiracy///	Ignored State: open|filtered (997)
+# Nmap done at Mon May 11 09:50:40 2020 -- 1 IP address (1 host up) scanned in 28.43 seconds

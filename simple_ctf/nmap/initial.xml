@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///usr/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.80 scan initiated Mon May 11 09:48:40 2020 as: nmap -p- -Pn -sC -sV -oA nmap/initial 10.10.154.48 -->
+<nmaprun scanner="nmap" args="nmap -p- -Pn -sC -sV -oA nmap/initial 10.10.154.48" start="1589170720" startstr="Mon May 11 09:48:40 2020" version="7.80" xmloutputversion="1.04">
+<scaninfo type="syn" protocol="tcp" numservices="65535" services="1-65535"/>
+<verbose level="0"/>
+<debugging level="0"/>
+<taskprogress task="SYN Stealth Scan" time="1589170726" percent="0.05"/>
+<taskprogress task="SYN Stealth Scan" time="1589170728" percent="0.16"/>
