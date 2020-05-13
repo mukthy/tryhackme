@@ -1,0 +1,4 @@
+# Nmap 7.80 scan initiated Tue May 12 08:17:17 2020 as: nmap -Pn -sC -sV -oA nmap/all 10.10.184.170
+Host: 10.10.184.170 ()	Status: Up
+Host: 10.10.184.170 ()	Ports: 21/open/tcp//ftp//Microsoft ftpd/, 3389/open/tcp//tcpwrapped///, 9999/open/tcp//abyss?///	Ignored State: filtered (997)
+# Nmap done at Tue May 12 08:22:02 2020 -- 1 IP address (1 host up) scanned in 285.52 seconds
